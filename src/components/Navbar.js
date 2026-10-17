@@ -80,11 +80,11 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-50 transition-all duration-300 py-2 sm:py-3 px-3 sm:px-6">
-      <div className="container-otach !p-0">
+    <header className="sticky top-0 z-50 transition-all duration-300 py-4 sm:py-5">
+      <div className="container-otach">
         {/* Rounded container with light neutral surface */}
         <div
-          className={`h-16 md:h-18 px-4 sm:px-6 rounded-2xl md:rounded-full flex items-center justify-between relative transition-all duration-300 ${
+          className={`h-16 sm:h-18 px-6 sm:px-8 rounded-2xl md:rounded-full flex items-center justify-between relative transition-all duration-300 ${
             scrolled
               ? "bg-white/95 backdrop-blur-md border border-[var(--border-light)] shadow-[var(--shadow-sm)]"
               : "bg-white/90 backdrop-blur-sm border border-[var(--border-light)] shadow-[var(--shadow-xs)]"
@@ -241,17 +241,19 @@ export default function Navbar() {
           {/* ── Center: Separate Brand Symbol Image and Text "Otach" ── */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 group md:absolute md:left-1/2 md:-translate-x-1/2 focus:outline-none"
+            className="flex items-center gap-1.5 group md:absolute md:left-1/2 md:-translate-x-1/2 focus:outline-none"
             aria-label="Otach Timepieces Homepage"
           >
-            <Image
-              src="/images/otach-logo.png"
-              alt="Otach"
-              width={36}
-              height={36}
-              className="w-8 h-8 sm:w-9 sm:h-9 object-contain transition-transform duration-300 group-hover:scale-105"
-              priority
-            />
+            <div className="relative w-8 h-8 sm:w-9 sm:h-9 overflow-hidden flex items-center justify-center shrink-0">
+              <Image
+                src="/images/otach-logo.png"
+                alt="Otach"
+                width={48}
+                height={48}
+                className="w-[130%] h-[130%] max-w-none object-contain translate-x-[4%] translate-y-[2%] transition-transform duration-300 group-hover:scale-105"
+                priority
+              />
+            </div>
             <span className="text-xl font-bold tracking-tight text-[var(--text-primary)] group-hover:text-[var(--otach-teal)] transition-colors duration-200">
               Otach
             </span>

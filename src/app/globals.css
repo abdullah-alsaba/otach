@@ -9,42 +9,43 @@
 
 /* ─── Design Tokens ─────────────────────────────────────────── */
 :root {
-  /* Brand palette: muted teal */
-  --otach-teal:        #2d7a7a;
-  --otach-teal-light:  #3d9999;
-  --otach-teal-dark:   #1e5c5c;
-  --otach-teal-muted:  #e8f4f4;
-  --otach-teal-pale:   #f0f9f9;
+  /* Brand palette: deep luxury teal */
+  --otach-teal:        #1e6363;
+  --otach-teal-light:  #2d7a7a;
+  --otach-teal-dark:   #154b4b;
+  --otach-teal-muted:  #e7f2f2;
+  --otach-teal-pale:   #f2f7f7;
 
-  /* Surfaces: white and soft gray */
+  /* Surfaces: clean white and soft gray */
   --surface-white:    #ffffff;
-  --surface-gray-50:  #f9f9f9;
-  --surface-gray-100: #f4f4f5;
-  --surface-gray-200: #e8e8ea;
+  --surface-gray-50:  #f9fafb;
+  --surface-gray-100: #f2f4f7;
+  --surface-gray-200: #e4e7ec;
 
   /* Typography: near-black and neutral gray */
-  --text-primary:   #111111;
-  --text-secondary: #4b5563;
-  --text-muted:     #9ca3af;
-  --text-disabled:  #d1d5db;
+  --text-primary:   #101828;
+  --text-secondary: #475467;
+  --text-muted:     #98a2b3;
+  --text-disabled:  #d0d5dd;
 
   /* Border: subtle light gray */
-  --border-light:  #e5e7eb;
-  --border-medium: #d1d5db;
+  --border-light:  #eaecf0;
+  --border-medium: #d0d5dd;
 
   /* Shadows: restrained and soft */
-  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
-  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.04);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.06), 0 4px 6px -4px rgb(0 0 0 / 0.03);
+  --shadow-2xs: 0 1px 2px 0 rgb(16 24 40 / 0.03);
+  --shadow-xs: 0 1px 2px 0 rgb(16 24 40 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(16 24 40 / 0.08), 0 1px 2px -1px rgb(16 24 40 / 0.05);
+  --shadow-md: 0 4px 8px -2px rgb(16 24 40 / 0.08), 0 2px 4px -2px rgb(16 24 40 / 0.04);
+  --shadow-lg: 0 12px 16px -4px rgb(16 24 40 / 0.08), 0 4px 6px -2px rgb(16 24 40 / 0.03);
 
-  /* Radius: rounded corners */
+  /* Radius: consistent corners */
   --radius-xs:  4px;
-  --radius-sm:  6px;
+  --radius-sm:  8px;
   --radius-md:  12px;
-  --radius-lg:  20px;
-  --radius-xl:  28px;
-  --radius-2xl: 40px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-2xl: 32px;
   --radius-full: 9999px;
 
   /* HeroUI v3 theme mappings */
@@ -135,13 +136,38 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Layout ─────────────────────────────────────────────────── */
 .container-otach {
+  width: 100%;
   max-width: 1280px;
   margin-inline: auto;
-  padding-inline: clamp(1rem, 5vw, 2rem);
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-otach {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-otach {
+    padding-inline: 2rem;
+  }
 }
 
 .section-spacing {
-  padding-block: clamp(3rem, 6vw, 6rem);
+  padding-block: 2.75rem;
+}
+
+@media (min-width: 640px) {
+  .section-spacing {
+    padding-block: 3.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-spacing {
+    padding-block: 5.5rem;
+  }
 }
 
 /* ─── Reusable button utilities ──────────────────────────────── */
@@ -305,8 +331,9 @@ h1, h2, h3, h4, h5, h6 {
 /* ─── Input base ─────────────────────────────────────────────── */
 .input-otach {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-sm);
+  height: 2.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
   background: var(--surface-white);
   color: var(--text-primary);
@@ -318,7 +345,7 @@ h1, h2, h3, h4, h5, h6 {
 .input-otach::placeholder { color: var(--text-muted); }
 .input-otach:focus {
   border-color: var(--otach-teal);
-  box-shadow: 0 0 0 3px rgb(45 122 122 / 0.12);
+  box-shadow: 0 0 0 3px rgb(30 99 99 / 0.12);
 }
 
 /* ─── Divider ────────────────────────────────────────────────── */

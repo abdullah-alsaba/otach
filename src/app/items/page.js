@@ -118,28 +118,30 @@ function ProductListingContent() {
   };
 
   return (
-    <div className="bg-[var(--surface-gray-50)] min-h-screen pb-20">
+    <div className="bg-[var(--surface-gray-50)] min-h-screen">
       {/* ── Page Header ── */}
-      <div className="border-b border-[var(--border-light)] bg-white py-12 md:py-16">
+      <div className="border-b border-[var(--border-light)] bg-white pt-12 sm:pt-16 pb-8 sm:pb-10">
         <div className="container-otach">
-          <span className="badge-otach badge-teal mb-3">Otach Catalog</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--otach-teal)] block mb-2">
+            Otach Catalog
+          </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--text-primary)] mb-3">
             The Complete Collection
           </h1>
-          <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-[640px] leading-relaxed">
             Explore our curated horological lineup. Each timepiece is hand-assembled,
             rigorously regulated, and packaged with a certificate of authenticity.
           </p>
         </div>
       </div>
 
-      <div className="container-otach pt-8 sm:pt-10">
+      <div className="container-otach pt-8 sm:pt-10 pb-20 sm:pb-28">
         {/* ── Search & Filter Control Panel ── */}
-        <div className="bg-white rounded-2xl border border-[var(--border-light)] p-5 sm:p-7 mb-8 shadow-xs">
-          {/* Top Row: Search and Sort */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+        <div className="bg-white rounded-3xl border border-[var(--border-light)] p-6 sm:p-8 mb-8 shadow-xs">
+          {/* Main Controls Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 items-end">
             {/* Search Input */}
-            <div className="md:col-span-7 lg:col-span-8">
+            <div className="lg:col-span-4 sm:col-span-2">
               <label
                 htmlFor="items-search-input"
                 className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2"
@@ -148,7 +150,7 @@ function ProductListingContent() {
               </label>
               <div className="relative">
                 <svg
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
                   width="18"
                   height="18"
                   viewBox="0 0 24 24"
@@ -168,14 +170,14 @@ function ProductListingContent() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search timepieces by name, collection, or style..."
-                  className="w-full h-11 pl-11 pr-10 rounded-xl border border-[var(--border-light)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all"
+                  className="w-full h-12 pl-12 pr-10 rounded-xl border border-[var(--border-light)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all"
                 />
                 {search && (
                   <button
                     type="button"
                     onClick={() => setSearch("")}
                     aria-label="Clear search input"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 text-xs font-bold transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 text-xs font-bold transition-colors"
                   >
                     ✕
                   </button>
@@ -183,8 +185,84 @@ function ProductListingContent() {
               </div>
             </div>
 
+            {/* Category Select Filter */}
+            <div className="lg:col-span-3 sm:col-span-1">
+              <label
+                htmlFor="items-category-select"
+                className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2"
+              >
+                Category
+              </label>
+              <div className="relative">
+                <select
+                  id="items-category-select"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full h-12 pl-4 pr-10 rounded-xl border border-[var(--border-light)] text-sm text-[var(--text-primary)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all appearance-none cursor-pointer"
+                >
+                  {CATEGORIES.map(({ value, label }) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Price Range Filter */}
+            <div className="lg:col-span-3 sm:col-span-1">
+              <label
+                htmlFor="items-price-select"
+                className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2"
+              >
+                Price Range
+              </label>
+              <div className="relative">
+                <select
+                  id="items-price-select"
+                  value={priceRangeIndex}
+                  onChange={(e) => setPriceRangeIndex(Number(e.target.value))}
+                  className="w-full h-12 pl-4 pr-10 rounded-xl border border-[var(--border-light)] text-sm text-[var(--text-primary)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all appearance-none cursor-pointer"
+                >
+                  {PRICE_RANGES.map((r, i) => (
+                    <option key={r.label} value={i}>
+                      {r.label}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            </div>
+
             {/* Sort Order */}
-            <div className="md:col-span-5 lg:col-span-4">
+            <div className="lg:col-span-2 sm:col-span-2">
               <label
                 htmlFor="items-sort-select"
                 className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2"
@@ -196,7 +274,7 @@ function ProductListingContent() {
                   id="items-sort-select"
                   value={sort}
                   onChange={(e) => setSort(e.target.value)}
-                  className="w-full h-11 pl-3.5 pr-9 rounded-xl border border-[var(--border-light)] text-sm text-[var(--text-primary)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all appearance-none cursor-pointer"
+                  className="w-full h-12 pl-4 pr-10 rounded-xl border border-[var(--border-light)] text-sm text-[var(--text-primary)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all appearance-none cursor-pointer"
                 >
                   {SORT_OPTIONS.map(({ value, label }) => (
                     <option key={value} value={value}>
@@ -205,7 +283,7 @@ function ProductListingContent() {
                   ))}
                 </select>
                 <svg
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
                   width="16"
                   height="16"
                   viewBox="0 0 24 24"
@@ -222,79 +300,32 @@ function ProductListingContent() {
             </div>
           </div>
 
-          {/* Bottom Row: Category Quick Pills + Price Range Filter */}
-          <div className="mt-5 pt-5 border-t border-[var(--border-light)] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            {/* Category Pills */}
-            <div className="w-full lg:w-auto">
-              <span className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
-                Category
-              </span>
-              <div
-                className="flex flex-wrap items-center gap-2"
-                role="group"
-                aria-label="Category filters"
+          {/* Quick Category Filter Pills */}
+          <div className="mt-6 pt-6 border-t border-[var(--border-light)] flex flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold text-[var(--text-muted)] mr-1">
+              Quick Filter:
+            </span>
+            {CATEGORIES.map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                id={`filter-pill-${value}`}
+                onClick={() => setCategory(value)}
+                className={`h-9 px-4 rounded-full text-xs font-medium border transition-all duration-200 cursor-pointer inline-flex items-center justify-center ${
+                  category === value
+                    ? "bg-[var(--otach-teal)] text-white border-[var(--otach-teal)] shadow-xs"
+                    : "bg-white text-[var(--text-secondary)] border-[var(--border-light)] hover:border-[var(--otach-teal)] hover:text-[var(--otach-teal)] hover:bg-[var(--otach-teal-pale)]"
+                }`}
               >
-                {CATEGORIES.map(({ value, label }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    id={`filter-pill-${value}`}
-                    onClick={() => setCategory(value)}
-                    className={`h-9 px-3.5 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer ${
-                      category === value
-                        ? "bg-[var(--otach-teal)] text-white border-[var(--otach-teal)] shadow-xs"
-                        : "bg-white text-[var(--text-secondary)] border-[var(--border-light)] hover:border-[var(--otach-teal)] hover:text-[var(--otach-teal)] hover:bg-[var(--otach-teal-pale)]"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Price Range Filter */}
-            <div className="w-full sm:w-auto lg:min-w-[220px]">
-              <label
-                htmlFor="items-price-select"
-                className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2"
-              >
-                Price Range
-              </label>
-              <div className="relative">
-                <select
-                  id="items-price-select"
-                  value={priceRangeIndex}
-                  onChange={(e) => setPriceRangeIndex(Number(e.target.value))}
-                  className="w-full h-9 pl-3.5 pr-8 rounded-full border border-[var(--border-light)] text-xs font-semibold text-[var(--text-primary)] bg-white focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all appearance-none cursor-pointer"
-                >
-                  {PRICE_RANGES.map((r, i) => (
-                    <option key={r.label} value={i}>
-                      {r.label}
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
-            </div>
+                {label}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* ── Results Count & Active Filter Pills Bar ── */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 px-1">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 px-1">
+          <div className="flex flex-wrap items-center gap-2.5">
             <p className="text-xs font-medium text-[var(--text-secondary)]">
               Showing <span className="font-bold text-[var(--text-primary)]">{filtered.length}</span>{" "}
               of <span className="font-bold text-[var(--text-primary)]">{products.length}</span> timepieces
@@ -302,7 +333,7 @@ function ProductListingContent() {
 
             {/* Active category chip */}
             {category !== "All" && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--otach-teal-pale)] text-[var(--otach-teal-dark)] border border-[var(--otach-teal)]/30">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--otach-teal-pale)] text-[var(--otach-teal-dark)] border border-[var(--otach-teal)]/30">
                 <span>{CATEGORIES.find((c) => c.value === category)?.label}</span>
                 <button
                   type="button"
@@ -317,7 +348,7 @@ function ProductListingContent() {
 
             {/* Active price range chip */}
             {priceRangeIndex !== 0 && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--otach-teal-pale)] text-[var(--otach-teal-dark)] border border-[var(--otach-teal)]/30">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--otach-teal-pale)] text-[var(--otach-teal-dark)] border border-[var(--otach-teal)]/30">
                 <span>{PRICE_RANGES[priceRangeIndex].label}</span>
                 <button
                   type="button"
@@ -332,7 +363,7 @@ function ProductListingContent() {
 
             {/* Active search chip */}
             {search.trim() && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--otach-teal-pale)] text-[var(--otach-teal-dark)] border border-[var(--otach-teal)]/30">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--otach-teal-pale)] text-[var(--otach-teal-dark)] border border-[var(--otach-teal)]/30">
                 <span>&ldquo;{search.trim()}&rdquo;</span>
                 <button
                   type="button"
@@ -351,7 +382,7 @@ function ProductListingContent() {
               type="button"
               id="items-clear-all"
               onClick={handleResetFilters}
-              className="text-xs font-semibold text-[var(--otach-teal)] hover:text-[var(--otach-teal-dark)] hover:underline inline-flex items-center gap-1 transition-colors focus:outline-none"
+              className="text-xs font-semibold text-[var(--otach-teal)] hover:text-[var(--otach-teal-dark)] hover:underline inline-flex items-center gap-1 transition-colors focus:outline-none cursor-pointer"
             >
               <svg
                 width="12"
@@ -374,7 +405,7 @@ function ProductListingContent() {
 
         {/* ── Product Grid or Empty State ── */}
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-[var(--border-light)] p-12 text-center my-8 shadow-xs">
+          <div className="bg-white rounded-3xl border border-[var(--border-light)] p-12 text-center my-8 shadow-xs">
             <div className="w-14 h-14 rounded-full bg-[var(--otach-teal-pale)] text-[var(--otach-teal)] flex items-center justify-center mx-auto mb-4">
               <svg
                 width="24"
@@ -407,7 +438,7 @@ function ProductListingContent() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

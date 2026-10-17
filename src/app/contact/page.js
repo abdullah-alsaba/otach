@@ -35,7 +35,9 @@ export default function ContactPage() {
       <section className="section-spacing border-b border-[var(--border-light)] bg-gradient-to-b from-[var(--surface-white)] to-[var(--surface-gray-50)]">
         <div className="container-otach">
           <div className="max-w-3xl mx-auto text-center animate-fade-up">
-            <span className="badge-otach badge-teal mb-4">Dedicated Client Care</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--otach-teal)] block mb-3">
+              Dedicated Client Care
+            </span>
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--text-primary)] mb-4">
               Otach Concierge Service
             </h1>
@@ -50,18 +52,21 @@ export default function ContactPage() {
       {/* ── Contact Details & Form Grid ── */}
       <section className="section-spacing">
         <div className="container-otach">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Left Column: Atelier Information */}
             <div className="lg:col-span-5 space-y-6">
-              <div className="card-otach p-6 sm:p-8 bg-white">
-                <h2 className="text-xl font-bold text-[var(--text-primary)] mb-6">
+              <div className="card-otach p-7 sm:p-9 bg-white border border-[var(--border-light)] rounded-3xl shadow-[var(--shadow-sm)]">
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--otach-teal)] block mb-2">
+                  Heritage Atelier
+                </span>
+                <h2 className="text-xl font-bold text-[var(--text-primary)] mb-6 tracking-tight">
                   Atelier & Client Services
                 </h2>
 
                 <div className="space-y-6 text-sm">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-xl bg-[var(--otach-teal-pale)] text-[var(--otach-teal)] flex items-center justify-center shrink-0">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                         <circle cx="12" cy="10" r="3" />
                       </svg>
@@ -76,14 +81,14 @@ export default function ContactPage() {
 
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-xl bg-[var(--otach-teal-pale)] text-[var(--otach-teal)] flex items-center justify-center shrink-0">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                         <polyline points="22,6 12,13 2,6" />
                       </svg>
                     </div>
                     <div>
                       <h3 className="font-semibold text-[var(--text-primary)]">Email Inquiries</h3>
-                      <p className="text-[var(--text-secondary)] mt-0.5">
+                      <p className="text-[var(--text-secondary)] mt-0.5 font-medium">
                         concierge@otach.com
                       </p>
                       <p className="text-xs text-[var(--text-muted)] mt-1">Average response within 4 hours</p>
@@ -92,7 +97,7 @@ export default function ContactPage() {
 
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-xl bg-[var(--otach-teal-pale)] text-[var(--otach-teal)] flex items-center justify-center shrink-0">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10" />
                         <polyline points="12 6 12 12 16 14" />
                       </svg>
@@ -106,13 +111,21 @@ export default function ContactPage() {
                     </div>
                   </div>
                 </div>
+
+                <div className="mt-8 pt-6 border-t border-[var(--border-light)] flex items-center gap-2.5 text-xs text-[var(--text-secondary)]">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Senior horologists available for private consult</span>
+                </div>
               </div>
             </div>
 
             {/* Right Column: Inquiry Form */}
             <div className="lg:col-span-7">
-              <div className="card-otach p-6 sm:p-8 bg-white">
-                <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+              <div className="card-otach p-7 sm:p-9 bg-white border border-[var(--border-light)] rounded-3xl shadow-[var(--shadow-sm)]">
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--otach-teal)] block mb-2">
+                  Direct Inquiries
+                </span>
+                <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2 tracking-tight">
                   Send a Message
                 </h2>
                 <p className="text-sm text-[var(--text-secondary)] mb-6">
@@ -120,16 +133,16 @@ export default function ContactPage() {
                 </p>
 
                 {submitted ? (
-                  <div className="p-6 rounded-2xl bg-[var(--otach-teal-pale)] border border-[var(--otach-teal)]/30 text-center animate-fade-in">
+                  <div className="p-8 rounded-2xl bg-[var(--otach-teal-pale)] border border-[var(--otach-teal)]/30 text-center animate-fade-in">
                     <div className="w-12 h-12 rounded-full bg-[var(--otach-teal)] text-white flex items-center justify-center mx-auto mb-3">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </div>
                     <h3 className="font-bold text-base text-[var(--text-primary)] mb-1">
                       Inquiry Received
                     </h3>
-                    <p className="text-xs text-[var(--text-secondary)] mb-4">
+                    <p className="text-xs text-[var(--text-secondary)] mb-5 max-w-sm mx-auto">
                       Thank you, {name}. An Otach concierge representative has received your request and will reach out shortly.
                     </p>
                     <button
@@ -140,7 +153,7 @@ export default function ContactPage() {
                         setEmail("");
                         setMessage("");
                       }}
-                      className="btn-outline btn-sm"
+                      className="btn-outline btn-sm cursor-pointer"
                     >
                       Send Another Inquiry
                     </button>
@@ -149,8 +162,8 @@ export default function ContactPage() {
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="name" className="block text-xs font-semibold text-[var(--text-primary)] mb-1.5">
-                          Your Name <span className="text-[var(--status-error)]">*</span>
+                        <label htmlFor="name" className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
+                          Your Name <span className="text-red-500">*</span>
                         </label>
                         <input
                           id="name"
@@ -159,13 +172,13 @@ export default function ContactPage() {
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="e.g., Julien Beaumont"
-                          className="w-full px-4 py-2.5 rounded-xl border border-[var(--border-light)] bg-white text-sm focus:outline-none focus:border-[var(--otach-teal)] transition-colors"
+                          className="w-full h-11 px-3.5 rounded-xl border border-[var(--border-light)] bg-white text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="email" className="block text-xs font-semibold text-[var(--text-primary)] mb-1.5">
-                          Email Address <span className="text-[var(--status-error)]">*</span>
+                        <label htmlFor="email" className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
+                          Email Address <span className="text-red-500">*</span>
                         </label>
                         <input
                           id="email"
@@ -174,31 +187,47 @@ export default function ContactPage() {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="julien@example.com"
-                          className="w-full px-4 py-2.5 rounded-xl border border-[var(--border-light)] bg-white text-sm focus:outline-none focus:border-[var(--otach-teal)] transition-colors"
+                          className="w-full h-11 px-3.5 rounded-xl border border-[var(--border-light)] bg-white text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="subject" className="block text-xs font-semibold text-[var(--text-primary)] mb-1.5">
+                      <label htmlFor="subject" className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                         Inquiry Subject
                       </label>
-                      <select
-                        id="subject"
-                        value={subject}
-                        onChange={(e) => setSubject(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-[var(--border-light)] bg-white text-sm focus:outline-none focus:border-[var(--otach-teal)] transition-colors"
-                      >
-                        <option value="concierge">Timepiece Consultation & Sourcing</option>
-                        <option value="order">Order Tracking & Delivery Status</option>
-                        <option value="service">Service, Regulation & Maintenance</option>
-                        <option value="general">General Inquiries</option>
-                      </select>
+                      <div className="relative">
+                        <select
+                          id="subject"
+                          value={subject}
+                          onChange={(e) => setSubject(e.target.value)}
+                          className="w-full h-11 pl-3.5 pr-10 rounded-xl border border-[var(--border-light)] bg-white text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="concierge">Timepiece Consultation & Sourcing</option>
+                          <option value="order">Order Tracking & Delivery Status</option>
+                          <option value="service">Service, Regulation & Maintenance</option>
+                          <option value="general">General Inquiries</option>
+                        </select>
+                        <svg
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </div>
                     </div>
 
                     <div>
-                      <label htmlFor="message" className="block text-xs font-semibold text-[var(--text-primary)] mb-1.5">
-                        Message <span className="text-[var(--status-error)]">*</span>
+                      <label htmlFor="message" className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
+                        Message <span className="text-red-500">*</span>
                       </label>
                       <textarea
                         id="message"
@@ -206,17 +235,19 @@ export default function ContactPage() {
                         required
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Tell us how we can assist you with your timepiece..."
-                        className="w-full px-4 py-2.5 rounded-xl border border-[var(--border-light)] bg-white text-sm focus:outline-none focus:border-[var(--otach-teal)] transition-colors resize-none"
+                        placeholder="Tell us how we can assist you with your timepiece selection or service..."
+                        className="w-full p-3.5 rounded-xl border border-[var(--border-light)] bg-white text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all resize-none"
                       />
                     </div>
 
-                    <button
-                      type="submit"
-                      className="btn-primary w-full justify-center !py-3"
-                    >
-                      Submit Concierge Request
-                    </button>
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        className="btn-primary btn-lg w-full justify-center !w-full text-sm font-semibold cursor-pointer"
+                      >
+                        Submit Concierge Request
+                      </button>
+                    </div>
                   </form>
                 )}
               </div>
@@ -229,14 +260,16 @@ export default function ContactPage() {
       <section id="shipping" className="section-spacing border-t border-[var(--border-light)] bg-[var(--surface-gray-50)]">
         <div className="container-otach max-w-4xl mx-auto">
           <div className="text-center mb-10">
-            <span className="badge-otach badge-gray mb-2">Policy & Logistics</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--otach-teal)] block mb-2">
+              Policy & Logistics
+            </span>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
               Shipping & Return Protocols
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-2xl bg-white border border-[var(--border-light)]">
+            <div className="p-7 rounded-2xl bg-white border border-[var(--border-light)] shadow-2xs">
               <h3 className="font-bold text-base text-[var(--text-primary)] mb-2">
                 Insured Global Dispatch
               </h3>
@@ -245,7 +278,7 @@ export default function ContactPage() {
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-[var(--border-light)]">
+            <div className="p-7 rounded-2xl bg-white border border-[var(--border-light)] shadow-2xs">
               <h3 className="font-bold text-base text-[var(--text-primary)] mb-2">
                 30-Day Evaluation Period
               </h3>

@@ -72,34 +72,36 @@ const socialLinks = [
 export default function Footer() {
   return (
     <footer className="bg-[var(--surface-gray-50)] border-t border-[var(--border-light)] mt-auto text-[var(--text-secondary)]">
-      <div className="container-otach py-14 sm:py-16 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12">
+      <div className="container-otach pt-16 sm:pt-20 pb-10 sm:pb-14">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12 items-start">
           {/* Brand Column */}
-          <div className="md:col-span-4 lg:col-span-4">
+          <div className="md:col-span-4 lg:col-span-4 flex flex-col items-start gap-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2.5 group"
+              className="inline-flex items-center gap-1.5 group"
               aria-label="Otach Timepieces Homepage"
             >
-              <Image
-                src="/images/otach-logo.png"
-                alt="Otach"
-                width={32}
-                height={32}
-                className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-105"
-              />
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 overflow-hidden flex items-center justify-center shrink-0">
+                <Image
+                  src="/images/otach-logo.png"
+                  alt="Otach"
+                  width={48}
+                  height={48}
+                  className="w-[130%] h-[130%] max-w-none object-contain translate-x-[4%] translate-y-[2%] transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
               <span className="text-xl font-bold tracking-tight text-[var(--text-primary)] group-hover:text-[var(--otach-teal)] transition-colors duration-200">
                 Otach
               </span>
             </Link>
 
-            <p className="mt-4 text-sm leading-relaxed text-[var(--text-secondary)] max-w-sm">
+            <p className="text-sm leading-relaxed text-[var(--text-secondary)] max-w-[340px]">
               Discover timeless elegance and precision craftsmanship. Otach curates exceptional
               timepieces designed for understated distinction and mechanical mastery.
             </p>
 
             {/* Social Placeholders */}
-            <div className="mt-6 flex items-center gap-2.5" aria-label="Social media channels">
+            <div className="flex items-center gap-2.5 pt-1" aria-label="Social media channels">
               {socialLinks.map(({ name, href, icon }) => (
                 <a
                   key={name}
@@ -114,20 +116,20 @@ export default function Footer() {
               ))}
             </div>
 
-            <div className="mt-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[var(--border-light)] text-xs text-[var(--text-secondary)]">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[var(--border-light)] text-xs text-[var(--text-secondary)]">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Concierge online & ready to assist</span>
             </div>
           </div>
 
           {/* Navigation Links Columns */}
-          <div className="md:col-span-8 lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
+          <div className="md:col-span-8 lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8 items-start">
             {Object.entries(footerNavigation).map(([category, links]) => (
-              <div key={category} className="flex flex-col gap-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
+              <div key={category} className="flex flex-col">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] mb-4">
                   {category}
                 </h3>
-                <ul className="space-y-2.5" role="list">
+                <ul className="space-y-3" role="list">
                   {links.map(({ href, label }) => (
                     <li key={label}>
                       <Link
@@ -145,8 +147,8 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar: Copyright, Legal, Region */}
-        <div className="mt-14 pt-8 border-t border-[var(--border-light)] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
-          <p>© 2026 Otach Timepieces. All rights reserved.</p>
+        <div className="mt-14 sm:mt-16 pt-6 sm:pt-8 pb-2 border-t border-[var(--border-light)] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
+          <p className="shrink-0">© 2026 Otach Timepieces. All rights reserved.</p>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-[var(--text-secondary)]">
             <a href="#" className="hover:text-[var(--otach-teal)] transition-colors">
@@ -160,7 +162,7 @@ export default function Footer() {
             </a>
           </div>
 
-          <div className="flex items-center gap-1.5 text-[var(--text-muted)]">
+          <div className="flex items-center gap-1.5 text-[var(--text-muted)] shrink-0">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="10" />
               <line x1="2" x2="22" y1="12" y2="12" />

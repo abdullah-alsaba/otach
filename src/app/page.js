@@ -114,7 +114,7 @@ function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-b from-[var(--surface-white)] via-[var(--otach-teal-pale)] to-[var(--surface-gray-50)] py-12 sm:py-16 lg:py-20"
+      className="relative flex items-center overflow-hidden bg-gradient-to-b from-[var(--surface-white)] via-[var(--otach-teal-pale)] to-[var(--surface-gray-50)] pt-8 sm:pt-12 lg:pt-14 pb-16 sm:pb-20 lg:pb-24"
       aria-label="Hero section"
     >
       {/* Background ambient lighting */}
@@ -123,15 +123,14 @@ function HeroSection() {
         <div className="absolute bottom-1/4 left-1/4 w-72 h-72 rounded-full bg-[var(--otach-teal)] opacity-5 blur-2xl" />
       </div>
 
-      <div className="container-otach relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+      <div className="container-otach relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
         {/* Left Column: Premium Shopping Headline & CTA */}
         <div className="lg:col-span-7 flex flex-col items-start animate-fade-up">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--otach-teal-muted)] border border-[var(--otach-teal)]/20 text-xs font-semibold text-[var(--otach-teal-dark)] mb-5 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-[var(--otach-teal)] animate-pulse" />
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--otach-teal)] block mb-2">
             Otach Horological Collection
-          </div>
+          </span>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.12] tracking-tight text-[var(--text-primary)] mb-6">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.12] tracking-tight text-[var(--text-primary)] mb-4">
             Precision in Motion.
             <span className="block text-[var(--otach-teal)] font-medium">
               Crafted for Eternity.
@@ -144,11 +143,11 @@ function HeroSection() {
             unwavering standards of horology.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 mb-8">
+          <div className="flex flex-wrap items-center gap-4 mb-10">
             <Link
               id="hero-cta-shop"
               href="/items"
-              className="btn-primary btn-lg shadow-sm hover:shadow-md transition-all group inline-flex items-center gap-2"
+              className="h-12 px-7 rounded-full btn-primary text-sm font-semibold shadow-xs hover:shadow-sm transition-all group inline-flex items-center justify-center gap-2"
             >
               <span>Explore Timepieces</span>
               <svg
@@ -169,31 +168,31 @@ function HeroSection() {
             <Link
               id="hero-cta-heritage"
               href="/items?category=analog"
-              className="btn-outline btn-lg"
+              className="h-12 px-7 rounded-full border border-[var(--border-medium)] bg-transparent hover:bg-[var(--surface-gray-50)] text-[var(--text-primary)] text-sm font-semibold inline-flex items-center justify-center transition-all"
             >
               View Mechanical Line
             </Link>
           </div>
 
           {/* Horological Trust Badges */}
-          <div className="pt-6 border-t border-[var(--border-light)] w-full max-w-xl grid grid-cols-3 gap-4 text-left">
+          <div className="pt-6 border-t border-[var(--border-light)] w-full max-w-xl grid grid-cols-3 gap-6 text-left">
             <div>
-              <p className="text-xs font-bold text-[var(--text-primary)]">Swiss Regulation</p>
-              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Tested in-house</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">Swiss Regulation</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">Tested in-house</p>
             </div>
             <div>
-              <p className="text-xs font-bold text-[var(--text-primary)]">Sapphire Glass</p>
-              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Scratch resistant</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">Sapphire Glass</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">Scratch resistant</p>
             </div>
             <div>
-              <p className="text-xs font-bold text-[var(--text-primary)]">2-Year Coverage</p>
-              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Full warranty</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">2-Year Coverage</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">Full warranty</p>
             </div>
           </div>
         </div>
 
         {/* Right Column: Interactive Watch Carousel */}
-        <div className="lg:col-span-5 w-full flex justify-center animate-scale-in">
+        <div className="lg:col-span-5 w-full flex justify-center lg:justify-end animate-scale-in">
           <HeroCarousel />
         </div>
       </div>
@@ -215,7 +214,9 @@ function FeaturedSection() {
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-10">
           <div>
-            <span className="badge-otach badge-teal mb-2">Curated Picks</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--otach-teal)] block mb-2">
+              Curated Picks
+            </span>
             <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)]">
               Featured Timepieces
             </h2>
@@ -267,12 +268,14 @@ function CategoriesSection() {
     >
       <div className="container-otach">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="badge-otach badge-gray mb-2">Collections</span>
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--otach-teal)] block mb-2">
+            Collections
+          </span>
           <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] mb-3">
             Shop by Category
           </h2>
-          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-[620px] mx-auto [text-wrap:balance]">
             Find the exact profile that matches your lifestyle, from handcrafted
             automatic calibers to rugged diver cases.
           </p>
@@ -299,31 +302,33 @@ function WhyOtachSection() {
     >
       <div className="container-otach">
         {/* Section Header */}
-        <div className="text-center max-w-xl mx-auto mb-12">
-          <span className="badge-otach badge-teal mb-2">Customer Commitment</span>
+        <div className="text-center max-w-xl mx-auto mb-10 sm:mb-12">
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--otach-teal)] block mb-2">
+            Customer Commitment
+          </span>
           <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] mb-3">
             Why Otach
           </h2>
-          <p className="text-sm text-[var(--text-secondary)]">
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-[540px] mx-auto [text-wrap:balance]">
             Every timepiece purchase is backed by our dedicated horological care.
           </p>
         </div>
 
         {/* 3 Concise Shopping Benefits */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {shoppingBenefits.map(({ id, title, description, icon }) => (
             <div
               key={id}
               id={id}
-              className="p-8 rounded-[var(--radius-xl)] border border-[var(--border-light)] bg-[var(--surface-white)] hover:border-[var(--otach-teal)] hover:shadow-[var(--shadow-sm)] transition-all duration-300 flex flex-col items-center text-center group"
+              className="p-7 sm:p-9 rounded-3xl border border-[var(--border-light)] bg-[var(--surface-white)] hover:border-[var(--otach-teal)] hover:shadow-sm transition-all duration-300 flex flex-col items-center text-center group h-full"
             >
-              <div className="w-14 h-14 rounded-2xl bg-[var(--otach-teal-pale)] text-[var(--otach-teal)] flex items-center justify-center mb-6 group-hover:bg-[var(--otach-teal)] group-hover:text-white transition-all duration-300">
+              <div className="w-14 h-14 rounded-2xl bg-[var(--otach-teal-pale)] text-[var(--otach-teal)] flex items-center justify-center mb-6 group-hover:bg-[var(--otach-teal)] group-hover:text-white transition-all duration-300 shrink-0">
                 {icon}
               </div>
-              <h3 className="font-bold text-base text-[var(--text-primary)] mb-2.5">
+              <h3 className="font-bold text-base sm:text-lg text-[var(--text-primary)] mb-2.5">
                 {title}
               </h3>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-xs">
                 {description}
               </p>
             </div>
@@ -339,11 +344,11 @@ function PromotionalCTASection() {
   return (
     <section
       id="promotional-cta"
-      className="py-16 sm:py-20 bg-[var(--surface-gray-50)] border-t border-[var(--border-light)]"
+      className="py-20 sm:py-24 lg:py-28 bg-[var(--surface-gray-50)] border-t border-[var(--border-light)]"
       aria-label="Explore catalog promotional banner"
     >
       <div className="container-otach">
-        <div className="relative rounded-[var(--radius-2xl)] overflow-hidden bg-gradient-to-r from-[var(--otach-teal-dark)] to-[var(--otach-teal)] text-white p-8 sm:p-14 lg:p-16 shadow-[var(--shadow-md)]">
+        <div className="relative rounded-3xl sm:rounded-4xl overflow-hidden bg-gradient-to-r from-[var(--otach-teal-dark)] to-[var(--otach-teal)] text-white p-8 sm:p-12 lg:p-16 shadow-md">
           {/* Subtle geometric pattern overlay */}
           <div
             className="absolute inset-0 opacity-10 pointer-events-none"
@@ -356,13 +361,13 @@ function PromotionalCTASection() {
           />
 
           <div className="relative z-10 max-w-2xl">
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-white/20 text-white backdrop-blur-xs uppercase tracking-wider mb-4">
+            <span className="text-xs font-bold uppercase tracking-widest text-white/80 block mb-2">
               Curated Catalog
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4 tracking-tight">
               Find Your Defining Timepiece
             </h2>
-            <p className="text-sm sm:text-base text-white/90 leading-relaxed mb-8 max-w-lg">
+            <p className="text-sm sm:text-base text-white/90 leading-relaxed mb-8 max-w-[560px]">
               Explore our full selection of hand-inspected automatic, dress,
               chronograph, and connected timepieces. Each watch includes an individual
               certificate of authenticity.
@@ -372,14 +377,14 @@ function PromotionalCTASection() {
               <Link
                 id="cta-explore-catalog"
                 href="/items"
-                className="px-8 py-3.5 rounded-full bg-white text-[var(--otach-teal-dark)] font-bold text-sm hover:bg-[var(--otach-teal-pale)] transition-colors shadow-sm"
+                className="h-12 px-7 rounded-full bg-white text-[var(--otach-teal-dark)] font-bold text-sm hover:bg-[var(--otach-teal-pale)] transition-colors shadow-xs inline-flex items-center justify-center shrink-0"
               >
                 Explore All Products
               </Link>
               <Link
                 id="cta-concierge"
                 href="/contact"
-                className="px-7 py-3.5 rounded-full border border-white/60 text-white font-semibold text-sm hover:bg-white/10 transition-colors"
+                className="h-12 px-7 rounded-full border border-white/70 text-white font-semibold text-sm hover:bg-white/10 transition-colors inline-flex items-center justify-center shrink-0"
               >
                 Contact Concierge
               </Link>

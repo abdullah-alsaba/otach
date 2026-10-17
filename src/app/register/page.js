@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@heroui/react";
 
 export default function RegisterPage() {
@@ -10,6 +11,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
   const [errors, setErrors] = useState({});
@@ -18,11 +20,8 @@ export default function RegisterPage() {
 
   const validate = () => {
     const errs = {};
-
     if (!name.trim()) {
       errs.name = "Full name is required.";
-    } else if (name.trim().length < 2) {
-      errs.name = "Name must be at least 2 characters.";
     }
 
     if (!email.trim()) {
@@ -44,7 +43,7 @@ export default function RegisterPage() {
     }
 
     if (!termsAccepted) {
-      errs.terms = "You must agree to the Terms of Service.";
+      errs.terms = "You must accept the Terms of Service.";
     }
 
     setErrors(errs);
@@ -87,34 +86,28 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="bg-[var(--surface-gray-50)] min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6">
+    <div className="bg-[var(--surface-gray-50)] min-h-[calc(100vh-5rem)] flex items-center justify-center py-10 sm:py-16 px-4 sm:px-6">
       <div className="w-full max-w-md">
         {/* Card Container */}
-        <div className="card-otach p-8 sm:p-10 bg-white shadow-[var(--shadow-md)]">
+        <div className="card-otach p-7 sm:p-9 bg-white shadow-[var(--shadow-sm)] border border-[var(--border-light)] rounded-3xl">
           {/* Brand header */}
           <div className="text-center mb-8">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 mb-3 group"
+              className="inline-flex items-center gap-1.5 mb-4 group focus:outline-none"
               aria-label="Otach Home"
             >
-              <span className="w-8 h-8 rounded-full bg-[var(--otach-teal-muted)] border border-[var(--otach-teal)] flex items-center justify-center text-[var(--otach-teal)] transition-transform duration-300 group-hover:scale-105">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-              </span>
-              <span className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 overflow-hidden flex items-center justify-center shrink-0">
+                <Image
+                  src="/images/otach-logo.png"
+                  alt="Otach"
+                  width={48}
+                  height={48}
+                  className="w-[130%] h-[130%] max-w-none object-contain translate-x-[4%] translate-y-[2%]"
+                  priority
+                />
+              </div>
+              <span className="text-2xl font-bold tracking-tight text-[var(--text-primary)] group-hover:text-[var(--otach-teal)] transition-colors">
                 Otach
               </span>
             </Link>
@@ -122,14 +115,14 @@ export default function RegisterPage() {
               Create an Account
             </h1>
             <p className="text-xs text-[var(--text-secondary)] mt-1.5">
-              Join the Otach client collective for order tracking and exclusive releases.
+              Join the Otach client collective for order tracking and bespoke releases.
             </p>
           </div>
 
           {/* Form error banner */}
           {errors.form && (
             <div
-              className="mb-6 p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2"
+              className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2"
               role="alert"
             >
               <svg
@@ -154,7 +147,7 @@ export default function RegisterPage() {
           {/* Integration readiness banner */}
           {infoMessage && (
             <div
-              className="mb-6 p-3.5 rounded-xl bg-[var(--otach-teal-pale)] border border-[var(--otach-teal)]/30 text-xs text-[var(--otach-teal-dark)] flex items-start gap-2 animate-fade-in"
+              className="mb-5 p-3.5 rounded-xl bg-[var(--otach-teal-pale)] border border-[var(--otach-teal)]/30 text-xs text-[var(--otach-teal-dark)] flex items-start gap-2 animate-fade-in"
               role="status"
             >
               <svg
@@ -180,7 +173,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="register-name"
-                className="block text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] mb-1.5"
+                className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2"
               >
                 Full Name
               </label>
@@ -194,15 +187,17 @@ export default function RegisterPage() {
                   if (errors.name) setErrors((prev) => ({ ...prev, name: null }));
                 }}
                 placeholder="Alexander Wright"
-                className={`input-otach ${
-                  errors.name ? "!border-red-500 focus:!ring-red-500/20" : ""
+                className={`w-full h-11 px-3.5 rounded-xl border text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all ${
+                  errors.name
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500/15"
+                    : "border-[var(--border-light)]"
                 }`}
                 aria-invalid={errors.name ? "true" : "false"}
                 aria-describedby={errors.name ? "register-name-error" : undefined}
                 disabled={isLoading}
               />
               {errors.name && (
-                <p id="register-name-error" className="text-xs text-red-600 mt-1 font-medium">
+                <p id="register-name-error" className="text-xs text-red-600 mt-1.5 font-medium">
                   {errors.name}
                 </p>
               )}
@@ -212,7 +207,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="register-email"
-                className="block text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] mb-1.5"
+                className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2"
               >
                 Email Address
               </label>
@@ -226,15 +221,17 @@ export default function RegisterPage() {
                   if (errors.email) setErrors((prev) => ({ ...prev, email: null }));
                 }}
                 placeholder="name@example.com"
-                className={`input-otach ${
-                  errors.email ? "!border-red-500 focus:!ring-red-500/20" : ""
+                className={`w-full h-11 px-3.5 rounded-xl border text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all ${
+                  errors.email
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500/15"
+                    : "border-[var(--border-light)]"
                 }`}
                 aria-invalid={errors.email ? "true" : "false"}
                 aria-describedby={errors.email ? "register-email-error" : undefined}
                 disabled={isLoading}
               />
               {errors.email && (
-                <p id="register-email-error" className="text-xs text-red-600 mt-1 font-medium">
+                <p id="register-email-error" className="text-xs text-red-600 mt-1.5 font-medium">
                   {errors.email}
                 </p>
               )}
@@ -242,40 +239,53 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="register-password"
-                  className="block text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]"
-                >
-                  Password
-                </label>
+              <label
+                htmlFor="register-password"
+                className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="register-password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) setErrors((prev) => ({ ...prev, password: null }));
+                  }}
+                  placeholder="At least 6 characters"
+                  className={`w-full h-11 pl-3.5 pr-10 rounded-xl border text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all ${
+                    errors.password
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/15"
+                      : "border-[var(--border-light)]"
+                  }`}
+                  aria-invalid={errors.password ? "true" : "false"}
+                  aria-describedby={errors.password ? "register-password-error" : undefined}
+                  disabled={isLoading}
+                />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="text-xs text-[var(--text-muted)] hover:text-[var(--otach-teal)]"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 transition-colors focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  {showPassword ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
                 </button>
               </div>
-              <input
-                id="register-password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="new-password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (errors.password) setErrors((prev) => ({ ...prev, password: null }));
-                }}
-                placeholder="At least 6 characters"
-                className={`input-otach ${
-                  errors.password ? "!border-red-500 focus:!ring-red-500/20" : ""
-                }`}
-                aria-invalid={errors.password ? "true" : "false"}
-                aria-describedby={errors.password ? "register-password-error" : undefined}
-                disabled={isLoading}
-              />
               {errors.password && (
-                <p id="register-password-error" className="text-xs text-red-600 mt-1 font-medium">
+                <p id="register-password-error" className="text-xs text-red-600 mt-1.5 font-medium">
                   {errors.password}
                 </p>
               )}
@@ -285,30 +295,52 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="register-confirm-password"
-                className="block text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] mb-1.5"
+                className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2"
               >
                 Confirm Password
               </label>
-              <input
-                id="register-confirm-password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="new-password"
-                value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  if (errors.confirmPassword)
-                    setErrors((prev) => ({ ...prev, confirmPassword: null }));
-                }}
-                placeholder="Repeat your password"
-                className={`input-otach ${
-                  errors.confirmPassword ? "!border-red-500 focus:!ring-red-500/20" : ""
-                }`}
-                aria-invalid={errors.confirmPassword ? "true" : "false"}
-                aria-describedby={errors.confirmPassword ? "register-confirm-error" : undefined}
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <input
+                  id="register-confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (errors.confirmPassword)
+                      setErrors((prev) => ({ ...prev, confirmPassword: null }));
+                  }}
+                  placeholder="Repeat your password"
+                  className={`w-full h-11 pl-3.5 pr-10 rounded-xl border text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all ${
+                    errors.confirmPassword
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/15"
+                      : "border-[var(--border-light)]"
+                  }`}
+                  aria-invalid={errors.confirmPassword ? "true" : "false"}
+                  aria-describedby={errors.confirmPassword ? "register-confirm-error" : undefined}
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 transition-colors focus:outline-none"
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                  {showConfirmPassword ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
               {errors.confirmPassword && (
-                <p id="register-confirm-error" className="text-xs text-red-600 mt-1 font-medium">
+                <p id="register-confirm-error" className="text-xs text-red-600 mt-1.5 font-medium">
                   {errors.confirmPassword}
                 </p>
               )}
@@ -325,9 +357,9 @@ export default function RegisterPage() {
                     setTermsAccepted(e.target.checked);
                     if (errors.terms) setErrors((prev) => ({ ...prev, terms: null }));
                   }}
-                  className="w-4 h-4 mt-0.5 rounded border-[var(--border-medium)] text-[var(--otach-teal)] focus:ring-[var(--otach-teal)]"
+                  className="w-4 h-4 mt-0.5 rounded border-[var(--border-medium)] text-[var(--otach-teal)] focus:ring-[var(--otach-teal)] cursor-pointer"
                 />
-                <label htmlFor="register-terms" className="text-xs text-[var(--text-secondary)] leading-relaxed select-none">
+                <label htmlFor="register-terms" className="text-xs text-[var(--text-secondary)] leading-relaxed select-none cursor-pointer">
                   I agree to the{" "}
                   <a href="#" className="text-[var(--otach-teal)] underline underline-offset-2">
                     Terms of Service
@@ -340,28 +372,30 @@ export default function RegisterPage() {
                 </label>
               </div>
               {errors.terms && (
-                <p className="text-xs text-red-600 mt-1 font-medium">{errors.terms}</p>
+                <p className="text-xs text-red-600 mt-1.5 font-medium">{errors.terms}</p>
               )}
             </div>
 
             {/* Submit Button (HeroUI Button component) */}
-            <Button
-              type="submit"
-              isDisabled={isLoading}
-              className="w-full btn-primary btn-lg !w-full justify-center text-sm font-semibold mt-4"
-            >
-              {isLoading ? (
-                <span className="flex items-center gap-2">
-                  <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                  </svg>
-                  <span>Creating Account…</span>
-                </span>
-              ) : (
-                "Create Account"
-              )}
-            </Button>
+            <div className="pt-2">
+              <Button
+                type="submit"
+                isDisabled={isLoading}
+                className="w-full btn-primary btn-lg !w-full justify-center text-sm font-semibold"
+              >
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    <span>Creating Account…</span>
+                  </span>
+                ) : (
+                  "Create Account"
+                )}
+              </Button>
+            </div>
           </form>
 
           {/* Switch to Login */}

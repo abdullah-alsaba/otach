@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,7 +12,7 @@ const heroSlides = [
     tagline: "Swiss Automatic Movement • Sapphire Crystal Glass",
     price: "$325",
     image: "/images/watch-classic.jpg",
-    feature: "Hand-regulated 28,800 vph caliber",
+    feature: "Hand-regulated 28,800 vph caliber with exhibition caseback",
     href: "/items/heritage-automatic",
   },
   {
@@ -22,7 +22,7 @@ const heroSlides = [
     tagline: "Vibrant AMOLED Display • 7-Day Battery Life",
     price: "$178",
     image: "/images/watch-teal.jpg",
-    feature: "Titanium-reinforced bezel with health telemetry",
+    feature: "Titanium-reinforced bezel with comprehensive wellness telemetry",
     href: "/items/celestial-timekeeper",
   },
   {
@@ -32,7 +32,7 @@ const heroSlides = [
     tagline: "18K Gold Plated • Milanese Stainless Mesh",
     price: "$480",
     image: "/images/watch-gold.jpg",
-    feature: "Sunburst champagne dial with sapphire crystal",
+    feature: "Sunburst champagne dial with anti-reflective sapphire crystal",
     href: "/items/gilded-horizon",
   },
   {
@@ -42,7 +42,7 @@ const heroSlides = [
     tagline: "200M Water Resistance • Ceramic Tachymeter",
     price: "$389",
     image: "/images/watch-sport.jpg",
-    feature: "Dual-locking crown with high-contrast dial",
+    feature: "Dual-locking screw-down crown with high-contrast luminescence",
     href: "/items/vanguard-diver",
   },
   {
@@ -52,7 +52,7 @@ const heroSlides = [
     tagline: "Rose Gold Accent • Velvet-Touch Silicone",
     price: "$219",
     image: "/images/watch-rose.jpg",
-    feature: "Delicate feminine silhouette & biometric tracking",
+    feature: "Sculpted silhouette with precision quartz caliber & smart telemetry",
     href: "/items/aurora-blush",
   },
 ];
@@ -63,28 +63,28 @@ export default function HeroCarousel() {
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
-  // Autoplay cycle every 5 seconds (pauses on hover/focus)
+  const goToNext = useCallback(() => {
+    setCurrent((prev) => (prev + 1) % heroSlides.length);
+  }, []);
+
+  const goToPrev = useCallback(() => {
+    setCurrent((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+  }, []);
+
+  // Subtle auto-advance every 6 seconds when not paused
   useEffect(() => {
     if (isPaused) return;
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % heroSlides.length);
-    }, 5000);
+    const interval = setInterval(goToNext, 6000);
     return () => clearInterval(interval);
-  }, [isPaused]);
-
-  const goToPrev = () => {
-    setCurrent((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1));
-  };
-
-  const goToNext = () => {
-    setCurrent((prev) => (prev + 1) % heroSlides.length);
-  };
+  }, [isPaused, goToNext]);
 
   // Keyboard navigation
   const handleKeyDown = (e) => {
     if (e.key === "ArrowLeft") {
+      e.preventDefault();
       goToPrev();
     } else if (e.key === "ArrowRight") {
+      e.preventDefault();
       goToNext();
     }
   };
@@ -107,7 +107,7 @@ export default function HeroCarousel() {
 
   return (
     <div
-      className="relative w-full max-w-[480px] lg:max-w-none mx-auto flex flex-col items-center"
+      className="relative w-full max-w-[500px] lg:max-w-[460px] xl:max-w-[500px] mx-auto flex flex-col focus:outline-none"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocus={() => setIsPaused(true)}
@@ -115,143 +115,177 @@ export default function HeroCarousel() {
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="region"
-      aria-label="Featured timepieces carousel"
+      aria-label="Featured timepieces showcase"
       aria-roledescription="carousel"
     >
-      {/* ── Visual Frame ── */}
-      <div
-        className="relative w-full aspect-square rounded-3xl overflow-hidden border border-[var(--border-light)] bg-gradient-to-br from-white via-[#FAFBFB] to-[#F1F6F6] shadow-[var(--shadow-lg)] flex items-center justify-center p-6 sm:p-10 select-none group"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Subtle Ambient Radial Lighting */}
+      {/* ── Outer Showcase Card ── */}
+      <div className="relative w-full rounded-3xl overflow-hidden border border-[var(--border-light)] bg-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-300">
+        {/* ── Product Photography Frame ── */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(circle_at_50%_50%,rgba(45,122,122,0.12),transparent_70%)]"
-          aria-hidden="true"
-        />
+          className="relative w-full aspect-[4/3] sm:aspect-square bg-gradient-to-b from-[#FAFAFA] via-[#FCFDFD] to-[#F3F6F6] flex items-center justify-center p-6 sm:p-10 select-none group"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Subtle Ambient Vignette */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(circle_at_50%_50%,rgba(45,122,122,0.1),transparent_70%)]"
+            aria-hidden="true"
+          />
 
-        {/* Top-Left Category Badge */}
-        <div className="absolute top-4 left-4 z-20">
-          <span className="badge-otach badge-teal text-[11px] font-bold shadow-xs backdrop-blur-xs">
-            {currentSlide.category}
-          </span>
-        </div>
-
-        {/* Top-Right Slide Counter */}
-        <div className="absolute top-4 right-4 z-20 text-[11px] font-semibold text-[var(--text-muted)] bg-white/80 backdrop-blur-xs px-2.5 py-1 rounded-full border border-[var(--border-light)]">
-          <span className="text-[var(--text-primary)] font-bold">{current + 1}</span> / {heroSlides.length}
-        </div>
-
-        {/* ── Slide Watch Images ── */}
-        <div className="relative w-full h-full flex items-center justify-center">
-          {heroSlides.map((slide, index) => {
-            const isActive = index === current;
-            return (
-              <div
-                key={slide.id}
-                className={`absolute inset-0 flex items-center justify-center p-4 transition-all duration-700 ease-out ${
-                  isActive
-                    ? "opacity-100 scale-100 pointer-events-auto"
-                    : "opacity-0 scale-95 pointer-events-none"
-                }`}
-                aria-hidden={!isActive}
-              >
-                <Link
-                  href={slide.href}
-                  className="relative w-full h-full block focus:outline-none"
-                  tabIndex={isActive ? 0 : -1}
-                  aria-label={`View ${slide.name}`}
+          {/* ── Slide Watch Images ── */}
+          <div className="relative w-full h-full flex items-center justify-center">
+            {heroSlides.map((slide, index) => {
+              const isActive = index === current;
+              return (
+                <div
+                  key={slide.id}
+                  className={`absolute inset-0 flex items-center justify-center p-4 sm:p-6 transition-all duration-700 ease-out ${
+                    isActive
+                      ? "opacity-100 scale-100 pointer-events-auto"
+                      : "opacity-0 scale-95 pointer-events-none"
+                  }`}
+                  aria-hidden={!isActive}
                 >
-                  <Image
-                    src={slide.image}
-                    alt={slide.name}
-                    fill
-                    priority={index === 0}
-                    className="object-contain drop-shadow-md transition-transform duration-500 hover:scale-105"
-                    sizes="(max-width: 640px) 320px, (max-width: 1024px) 440px, 480px"
-                  />
-                </Link>
-              </div>
-            );
-          })}
+                  <Link
+                    href={slide.href}
+                    className="relative w-full h-full block focus:outline-none"
+                    tabIndex={isActive ? 0 : -1}
+                    aria-label={`View ${slide.name}`}
+                  >
+                    <Image
+                      src={slide.image}
+                      alt={slide.name}
+                      fill
+                      priority={index === 0}
+                      className="object-contain drop-shadow-md transition-transform duration-500 hover:scale-105"
+                      sizes="(max-width: 640px) 340px, (max-width: 1024px) 440px, 500px"
+                    />
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* ── Left / Right Minimal Navigation Arrows ── */}
+          <button
+            type="button"
+            onClick={goToPrev}
+            aria-label="Previous timepiece slide"
+            className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-[var(--text-primary)] hover:text-[var(--otach-teal)] border border-[var(--border-light)] shadow-xs hover:shadow-sm flex items-center justify-center transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-[var(--otach-teal)] cursor-pointer"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            onClick={goToNext}
+            aria-label="Next timepiece slide"
+            className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-[var(--text-primary)] hover:text-[var(--otach-teal)] border border-[var(--border-light)] shadow-xs hover:shadow-sm flex items-center justify-center transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-[var(--otach-teal)] cursor-pointer"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
         </div>
 
-        {/* ── Previous / Next Navigation Arrows ── */}
-        <button
-          type="button"
-          onClick={goToPrev}
-          aria-label="Previous timepiece slide"
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-[var(--text-primary)] hover:text-[var(--otach-teal)] border border-[var(--border-light)] shadow-sm backdrop-blur-md flex items-center justify-center transition-all duration-200 z-20 opacity-80 group-hover:opacity-100 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[var(--otach-teal)]"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-
-        <button
-          type="button"
-          onClick={goToNext}
-          aria-label="Next timepiece slide"
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-[var(--text-primary)] hover:text-[var(--otach-teal)] border border-[var(--border-light)] shadow-sm backdrop-blur-md flex items-center justify-center transition-all duration-200 z-20 opacity-80 group-hover:opacity-100 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[var(--otach-teal)]"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-
-        {/* ── Bottom Floating Info Banner ── */}
-        <Link
-          href={currentSlide.href}
-          className="absolute bottom-3 inset-x-3 sm:inset-x-5 z-20 bg-white/95 backdrop-blur-md border border-[var(--border-light)] rounded-2xl p-3 shadow-md flex items-center justify-between gap-3 group/banner hover:border-[var(--otach-teal)] transition-all duration-200"
-          aria-label={`View details for ${currentSlide.name}`}
-        >
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="text-xs sm:text-sm font-bold text-[var(--text-primary)] truncate group-hover/banner:text-[var(--otach-teal)] transition-colors">
-                {currentSlide.name}
+        {/* ── Product Information Beneath Image ── */}
+        <div className="p-6 sm:p-7 border-t border-[var(--border-light)] bg-white flex flex-col gap-3">
+          <div>
+            <span className="text-[12px] font-bold uppercase tracking-wider text-[var(--otach-teal)] block mb-1.5">
+              {currentSlide.category}
+            </span>
+            <div className="flex items-baseline justify-between gap-4">
+              <h3 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] tracking-tight truncate">
+                <Link
+                  href={currentSlide.href}
+                  className="hover:text-[var(--otach-teal)] transition-colors"
+                >
+                  {currentSlide.name}
+                </Link>
               </h3>
-              <span className="text-[11px] font-bold text-[var(--otach-teal)]">
+              <span className="text-lg sm:text-xl font-bold text-[var(--text-primary)] shrink-0">
                 {currentSlide.price}
               </span>
             </div>
-            <p className="text-[11px] text-[var(--text-muted)] truncate mt-0.5">
-              {currentSlide.feature}
-            </p>
           </div>
 
-          <div className="shrink-0 flex items-center gap-1 text-[11px] font-semibold text-[var(--otach-teal)] group-hover/banner:translate-x-0.5 transition-transform">
-            <span className="hidden sm:inline">Details</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </div>
-        </Link>
-      </div>
+          <p className="text-sm text-[var(--text-secondary)] line-clamp-2 leading-relaxed">
+            {currentSlide.feature}
+          </p>
 
-      {/* ── Subtle Pagination Indicators ── */}
-      <div
-        className="flex items-center justify-center gap-2 mt-4"
-        role="tablist"
-        aria-label="Carousel slide buttons"
-      >
-        {heroSlides.map((slide, i) => {
-          const isActive = i === current;
-          return (
-            <button
-              key={slide.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              aria-label={`Go to slide ${i + 1}: ${slide.name}`}
-              onClick={() => setCurrent(i)}
-              className={`h-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--otach-teal)] ${
-                isActive
-                  ? "w-7 bg-[var(--otach-teal)] shadow-xs"
-                  : "w-2 bg-gray-300 hover:bg-gray-400"
-              }`}
-            />
-          );
-        })}
+          {/* Refined Navigation Bar: Slim indicator dashes and CTA link */}
+          <div className="pt-4 mt-1 border-t border-[var(--border-light)] flex items-center justify-between gap-4">
+            {/* Slim Dash Indicators */}
+            <div
+              className="flex items-center gap-1.5"
+              role="tablist"
+              aria-label="Timepiece slide indicators"
+            >
+              {heroSlides.map((slide, i) => {
+                const isActive = i === current;
+                return (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-label={`Show ${slide.name}`}
+                    onClick={() => setCurrent(i)}
+                    className={`h-1.5 rounded-full transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-[var(--otach-teal)] ${
+                      isActive
+                        ? "w-6 bg-[var(--otach-teal)]"
+                        : "w-2 bg-neutral-200 hover:bg-neutral-300"
+                    }`}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Direct CTA Link */}
+            <Link
+              href={currentSlide.href}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--otach-teal)] hover:text-[var(--otach-teal-dark)] transition-colors group"
+            >
+              <span>View Timepiece</span>
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
