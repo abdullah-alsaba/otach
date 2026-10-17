@@ -1,41 +1,80 @@
 @import "tailwindcss";
+@import "@heroui/styles/base";
+@import "@heroui/styles/themes/default";
+
+/* ─── Font token (wired from next/font/google) ───────────────── */
+@theme {
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
 
 /* ─── Design Tokens ─────────────────────────────────────────── */
 :root {
-  /* Brand palette */
+  /* Brand palette: muted teal */
   --otach-teal:        #2d7a7a;
   --otach-teal-light:  #3d9999;
+  --otach-teal-dark:   #1e5c5c;
   --otach-teal-muted:  #e8f4f4;
   --otach-teal-pale:   #f0f9f9;
 
-  /* Surfaces */
+  /* Surfaces: white and soft gray */
   --surface-white:    #ffffff;
   --surface-gray-50:  #f9f9f9;
   --surface-gray-100: #f4f4f5;
   --surface-gray-200: #e8e8ea;
 
-  /* Typography */
+  /* Typography: near-black and neutral gray */
   --text-primary:   #111111;
   --text-secondary: #4b5563;
   --text-muted:     #9ca3af;
   --text-disabled:  #d1d5db;
 
-  /* Border */
-  --border-light: #e5e7eb;
+  /* Border: subtle light gray */
+  --border-light:  #e5e7eb;
   --border-medium: #d1d5db;
 
-  /* Shadows */
+  /* Shadows: restrained and soft */
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
-  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.07), 0 1px 2px -1px rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.06), 0 4px 6px -4px rgb(0 0 0 / 0.03);
 
-  /* Radius */
+  /* Radius: rounded corners */
+  --radius-xs:  4px;
   --radius-sm:  6px;
   --radius-md:  12px;
   --radius-lg:  20px;
   --radius-xl:  28px;
   --radius-2xl: 40px;
+  --radius-full: 9999px;
+
+  /* HeroUI v3 theme mappings */
+  --accent:                     var(--otach-teal);
+  --accent-hover:               var(--otach-teal-light);
+  --accent-foreground:          #ffffff;
+  --default:                    var(--surface-gray-100);
+  --default-hover:              var(--surface-gray-200);
+  --default-foreground:         var(--text-primary);
+  --focus:                      var(--otach-teal);
+  --background:                 var(--surface-white);
+  --foreground:                 var(--text-primary);
+  --surface:                    var(--surface-white);
+  --surface-foreground:         var(--text-primary);
+  --border:                     var(--border-light);
+  --radius:                     12px;
+
+  /* HeroUI v2 backward compatibility */
+  --heroui-primary-50:  #f0f9f9;
+  --heroui-primary-100: #e8f4f4;
+  --heroui-primary-200: #c5e4e4;
+  --heroui-primary-300: #8ecece;
+  --heroui-primary-400: #56b3b3;
+  --heroui-primary-500: #2d7a7a;
+  --heroui-primary-600: #256868;
+  --heroui-primary-700: #1e5c5c;
+  --heroui-primary-800: #174646;
+  --heroui-primary-900: #0f2e2e;
+  --heroui-primary:     #2d7a7a;
+  --heroui-primary-foreground: #ffffff;
 }
 
 /* ─── Base Reset ─────────────────────────────────────────────── */
@@ -86,11 +125,206 @@ body {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ─── Utility classes ─────────────────────────────────────────── */
+/* ─── Typography Hierarchy ───────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+/* ─── Layout ─────────────────────────────────────────────────── */
 .container-otach {
   max-width: 1280px;
   margin-inline: auto;
   padding-inline: clamp(1rem, 5vw, 2rem);
+}
+
+.section-spacing {
+  padding-block: clamp(3rem, 6vw, 6rem);
+}
+
+/* ─── Reusable button utilities ──────────────────────────────── */
+
+/* Primary filled — teal bg, white text */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-full);
+  background: var(--otach-teal);
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 4px 14px 0 rgb(45 122 122 / 0.3);
+}
+.btn-primary:hover {
+  background: var(--otach-teal-light);
+  box-shadow: 0 6px 20px 0 rgb(45 122 122 / 0.4);
+  transform: translateY(-1px);
+}
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Secondary outline — transparent bg, teal border */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--otach-teal);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 2px solid var(--otach-teal);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+.btn-secondary:hover {
+  background: var(--otach-teal-pale);
+  transform: translateY(-1px);
+}
+.btn-secondary:active { transform: translateY(0); }
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Outline — subtle light gray border, neutral text */
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid var(--border-light);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.btn-outline:hover {
+  background: var(--surface-gray-50);
+  border-color: var(--border-medium);
+  transform: translateY(-1px);
+}
+.btn-outline:active { transform: translateY(0); }
+.btn-outline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Ghost — no border, muted text */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-ghost:hover {
+  background: var(--surface-gray-100);
+  color: var(--text-primary);
+}
+
+/* Size modifiers */
+.btn-sm {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.8125rem;
+}
+.btn-lg {
+  padding: 1rem 2.25rem;
+  font-size: 1rem;
+}
+
+/* ─── Card surface ───────────────────────────────────────────── */
+.card-otach {
+  background: var(--surface-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.card-otach:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* ─── Pill / badge ───────────────────────────────────────────── */
+.badge-otach {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.badge-teal {
+  background: var(--otach-teal-muted);
+  color: var(--otach-teal-dark);
+}
+.badge-gray {
+  background: var(--surface-gray-200);
+  color: var(--text-secondary);
+}
+
+/* ─── Input base ─────────────────────────────────────────────── */
+.input-otach {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  background: var(--surface-white);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+.input-otach::placeholder { color: var(--text-muted); }
+.input-otach:focus {
+  border-color: var(--otach-teal);
+  box-shadow: 0 0 0 3px rgb(45 122 122 / 0.12);
+}
+
+/* ─── Divider ────────────────────────────────────────────────── */
+.divider-otach {
+  border: none;
+  border-top: 1px solid var(--border-light);
 }
 
 /* ─── Hero animations ─────────────────────────────────────────── */
@@ -109,6 +343,11 @@ body {
   to   { opacity: 1; transform: scale(1); }
 }
 
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
+}
+
 .animate-fade-up   { animation: fadeUp   0.6s ease both; }
 .animate-fade-in   { animation: fadeIn   0.5s ease both; }
 .animate-scale-in  { animation: scaleIn  0.5s ease both; }
@@ -119,7 +358,15 @@ body {
 .delay-400 { animation-delay: 0.4s; }
 .delay-500 { animation-delay: 0.5s; }
 
-/* ─── HeroUI overrides ────────────────────────────────────────── */
-[data-slot="base"] {
-  --heroui-primary: var(--otach-teal);
+/* ─── Skeleton loader ────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-gray-100) 25%,
+    var(--surface-gray-200) 50%,
+    var(--surface-gray-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
 }
