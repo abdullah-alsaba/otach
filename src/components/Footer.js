@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -73,8 +70,6 @@ const socialLinks = [
 ];
 
 export default function Footer() {
-  const [logoError, setLogoError] = useState(false);
-
   return (
     <footer className="bg-[var(--surface-gray-50)] border-t border-[var(--border-light)] mt-auto text-[var(--text-secondary)]">
       <div className="container-otach py-14 sm:py-16 md:py-20">
@@ -86,35 +81,13 @@ export default function Footer() {
               className="inline-flex items-center gap-2.5 group"
               aria-label="Otach Timepieces Homepage"
             >
-              {!logoError ? (
-                <Image
-                  src="/images/otach-logo.svg"
-                  alt="Otach Symbol"
-                  width={30}
-                  height={30}
-                  className="w-7 h-7 object-contain"
-                  onError={() => setLogoError(true)}
-                />
-              ) : (
-                <span
-                  className="w-7 h-7 rounded-full bg-[var(--otach-teal-muted)] border border-[var(--otach-teal)] flex items-center justify-center text-[var(--otach-teal)] transition-transform duration-300 group-hover:scale-105"
-                  aria-hidden="true"
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                </span>
-              )}
+              <Image
+                src="/images/otach-logo.png"
+                alt="Otach"
+                width={32}
+                height={32}
+                className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-105"
+              />
               <span className="text-xl font-bold tracking-tight text-[var(--text-primary)] group-hover:text-[var(--otach-teal)] transition-colors duration-200">
                 Otach
               </span>

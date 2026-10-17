@@ -21,7 +21,6 @@ export default function Navbar() {
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [mobileShopOpen, setMobileShopOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
 
   /* Close menus on route change during render */
   if (prevPathname !== pathname) {
@@ -242,40 +241,17 @@ export default function Navbar() {
           {/* ── Center: Separate Brand Symbol Image and Text "Otach" ── */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 group md:absolute md:left-1/2 md:-translate-x-1/2"
+            className="flex items-center gap-2.5 group md:absolute md:left-1/2 md:-translate-x-1/2 focus:outline-none"
             aria-label="Otach Timepieces Homepage"
           >
-            {/* Brand symbol: temporary SVG path with clean CSS/SVG watch dial fallback */}
-            {!logoError ? (
-              <Image
-                src="/images/otach-logo.svg"
-                alt="Otach Symbol"
-                width={28}
-                height={28}
-                className="w-7 h-7 object-contain"
-                onError={() => setLogoError(true)}
-              />
-            ) : (
-              <span
-                className="w-7 h-7 rounded-full bg-[var(--otach-teal-muted)] border border-[var(--otach-teal)] flex items-center justify-center text-[var(--otach-teal)] transition-transform duration-300 group-hover:scale-105"
-                title="Otach brand symbol"
-                aria-hidden="true"
-              >
-                <svg
-                  width="15"
-                  height="15"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-              </span>
-            )}
+            <Image
+              src="/images/otach-logo.png"
+              alt="Otach"
+              width={36}
+              height={36}
+              className="w-8 h-8 sm:w-9 sm:h-9 object-contain transition-transform duration-300 group-hover:scale-105"
+              priority
+            />
             <span className="text-xl font-bold tracking-tight text-[var(--text-primary)] group-hover:text-[var(--otach-teal)] transition-colors duration-200">
               Otach
             </span>

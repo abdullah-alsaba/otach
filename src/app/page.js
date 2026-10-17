@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import CategoryCard from "@/components/CategoryCard";
+import HeroCarousel from "@/components/HeroCarousel";
 import { products } from "@/lib/products";
 
 export const metadata = {
@@ -113,21 +114,22 @@ function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative min-h-[82vh] flex items-center overflow-hidden bg-gradient-to-b from-[var(--surface-white)] via-[var(--otach-teal-pale)] to-[var(--surface-gray-50)] py-14 sm:py-20"
+      className="relative min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-b from-[var(--surface-white)] via-[var(--otach-teal-pale)] to-[var(--surface-gray-50)] py-12 sm:py-16 lg:py-20"
       aria-label="Hero section"
     >
-      {/* Background ambient glow */}
+      {/* Background ambient lighting */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-[var(--otach-teal)] opacity-5 blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-72 h-72 rounded-full bg-[var(--otach-teal)] opacity-5 blur-2xl" />
       </div>
 
-      <div className="container-otach relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      <div className="container-otach relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
         {/* Left Column: Premium Shopping Headline & CTA */}
         <div className="lg:col-span-7 flex flex-col items-start animate-fade-up">
-          <span className="badge-otach badge-teal mb-5">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--otach-teal-muted)] border border-[var(--otach-teal)]/20 text-xs font-semibold text-[var(--otach-teal-dark)] mb-5 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-[var(--otach-teal)] animate-pulse" />
             Otach Horological Collection
-          </span>
+          </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.12] tracking-tight text-[var(--text-primary)] mb-6">
             Precision in Motion.
@@ -142,13 +144,27 @@ function HeroSection() {
             unwavering standards of horology.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4 mb-8">
             <Link
               id="hero-cta-shop"
               href="/items"
-              className="btn-primary btn-lg"
+              className="btn-primary btn-lg shadow-sm hover:shadow-md transition-all group inline-flex items-center gap-2"
             >
-              Explore Timepieces
+              <span>Explore Timepieces</span>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="transition-transform group-hover:translate-x-1"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
             </Link>
             <Link
               id="hero-cta-heritage"
@@ -158,48 +174,27 @@ function HeroSection() {
               View Mechanical Line
             </Link>
           </div>
-        </div>
 
-        {/* Right Column: Polished Product Visual */}
-        <div className="lg:col-span-5 relative animate-scale-in">
-          <div className="relative aspect-[4/3] sm:aspect-square rounded-[var(--radius-2xl)] overflow-hidden border border-[var(--border-light)] shadow-[var(--shadow-lg)] bg-[var(--surface-white)]">
-            <Image
-              src="/images/hero_watch.jpg"
-              alt="Otach signature timepiece"
-              fill
-              priority
-              className="object-cover object-center"
-              sizes="(max-width: 1024px) 100vw, 40vw"
-            />
-          </div>
-
-          {/* Product Feature Callout Badge */}
-          <div className="absolute -bottom-4 -left-4 sm:bottom-4 sm:-left-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-[var(--shadow-md)] border border-[var(--border-light)] flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[var(--otach-teal-muted)] flex items-center justify-center text-[var(--otach-teal)]">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
+          {/* Horological Trust Badges */}
+          <div className="pt-6 border-t border-[var(--border-light)] w-full max-w-xl grid grid-cols-3 gap-4 text-left">
+            <div>
+              <p className="text-xs font-bold text-[var(--text-primary)]">Swiss Regulation</p>
+              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Tested in-house</p>
             </div>
             <div>
-              <p className="text-xs font-bold text-[var(--text-primary)]">
-                Sapphire Crystal Glass
-              </p>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                Hand-regulated Swiss movement
-              </p>
+              <p className="text-xs font-bold text-[var(--text-primary)]">Sapphire Glass</p>
+              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Scratch resistant</p>
+            </div>
+            <div>
+              <p className="text-xs font-bold text-[var(--text-primary)]">2-Year Coverage</p>
+              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Full warranty</p>
             </div>
           </div>
+        </div>
+
+        {/* Right Column: Interactive Watch Carousel */}
+        <div className="lg:col-span-5 w-full flex justify-center animate-scale-in">
+          <HeroCarousel />
         </div>
       </div>
     </section>
