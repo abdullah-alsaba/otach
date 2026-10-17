@@ -80,11 +80,11 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-50 transition-all duration-300 py-4 sm:py-5">
+    <header className="sticky top-0 z-50 transition-all duration-300 mt-4 mb-2">
       <div className="container-otach">
         {/* Rounded container with light neutral surface */}
         <div
-          className={`h-16 sm:h-18 px-6 sm:px-8 rounded-2xl md:rounded-full flex items-center justify-between relative transition-all duration-300 ${
+          className={`min-h-16 px-6 py-3 rounded-2xl md:rounded-full flex items-center justify-between gap-4 relative transition-all duration-300 ${
             scrolled
               ? "bg-white/95 backdrop-blur-md border border-[var(--border-light)] shadow-[var(--shadow-sm)]"
               : "bg-white/90 backdrop-blur-sm border border-[var(--border-light)] shadow-[var(--shadow-xs)]"
@@ -181,7 +181,7 @@ export default function Navbar() {
                               {label}
                             </span>
                             {badge && (
-                              <span className="badge-otach badge-teal text-[10px]">
+                              <span className="badge-otach badge-teal">
                                 {badge}
                               </span>
                             )}

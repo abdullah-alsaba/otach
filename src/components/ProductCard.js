@@ -16,41 +16,41 @@ export default function ProductCard({ product }) {
       {/* ── Product Image Container: Standardized Square Frame with Studio Light ── */}
       <Link
         href={`/items/${product.id}`}
-        className="relative block bg-gradient-to-b from-[#FAFAFA] via-white to-[#F4F7F7] aspect-square overflow-hidden p-6 focus:outline-none"
+        className="relative block bg-gradient-to-b from-[#FAFAFA] via-white to-[#F4F7F7] aspect-square overflow-hidden focus:outline-none"
         aria-label={`View ${product.name} details`}
       >
         <Image
           src={product.image}
           alt={product.name}
           fill
-          className="object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-105"
+          className="object-contain p-6 transition-transform duration-500 ease-out group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
 
         {/* Understated Status Badge */}
         {product.badge && (
-          <span className="absolute top-3.5 left-3.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-white/95 text-[var(--otach-teal-dark)] border border-[var(--border-light)] shadow-xs backdrop-blur-xs">
+          <span className="absolute top-4 left-4 px-2.5 py-0.5 rounded-full text-xs font-bold tracking-wider uppercase bg-white/95 text-[var(--otach-teal-dark)] border border-[var(--border-light)] shadow-xs backdrop-blur-xs">
             {product.badge}
           </span>
         )}
 
         {/* Understated Savings Tag */}
         {discount && (
-          <span className="absolute top-3.5 right-3.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/95 text-neutral-800 border border-[var(--border-light)] shadow-xs backdrop-blur-xs">
+          <span className="absolute top-4 right-4 px-2 py-0.5 rounded-full text-xs font-semibold bg-white/95 text-neutral-800 border border-[var(--border-light)] shadow-xs backdrop-blur-xs">
             -{discount}%
           </span>
         )}
       </Link>
 
       {/* ── Product Information ── */}
-      <div className="p-5 sm:p-6 flex flex-col flex-1">
+      <div className="p-5 flex flex-col flex-1">
         {/* Category & Stock Indicator Row */}
         <div className="flex items-center justify-between mb-2 gap-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--otach-teal)] truncate">
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--otach-teal)] truncate">
             {product.category}
           </span>
           {product.inStock && (
-            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60 flex items-center gap-1.5 shrink-0">
+            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60 flex items-center gap-1.5 shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               In Stock
             </span>
@@ -67,14 +67,14 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Short description with uniform 2-line height */}
-        <p className="text-xs text-[var(--text-secondary)] line-clamp-2 min-h-[2.5rem] leading-relaxed mb-4">
+        <p className="text-sm text-[var(--text-secondary)] line-clamp-2 min-h-[2.5rem] leading-relaxed mb-4">
           {shortDesc}
         </p>
 
         {/* ── Footer: Price & View Details Button strictly aligned to bottom ── */}
         <div className="mt-auto pt-4 border-t border-[var(--border-light)] flex items-center justify-between gap-3">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-wider">
+            <span className="text-xs uppercase font-bold text-[var(--text-muted)] tracking-wider">
               Price
             </span>
             <div className="flex items-baseline gap-1.5">

@@ -72,10 +72,10 @@ const socialLinks = [
 export default function Footer() {
   return (
     <footer className="bg-[var(--surface-gray-50)] border-t border-[var(--border-light)] mt-auto text-[var(--text-secondary)]">
-      <div className="container-otach pt-16 sm:pt-20 pb-10 sm:pb-14">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12 items-start">
+      <div className="container-otach pt-16 pb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))] gap-x-12 gap-y-10 items-start">
           {/* Brand Column */}
-          <div className="md:col-span-4 lg:col-span-4 flex flex-col items-start gap-4">
+          <div className="sm:col-span-2 lg:col-span-1 flex flex-col items-start gap-5">
             <Link
               href="/"
               className="inline-flex items-center gap-1.5 group"
@@ -101,7 +101,7 @@ export default function Footer() {
             </p>
 
             {/* Social Placeholders */}
-            <div className="flex items-center gap-2.5 pt-1" aria-label="Social media channels">
+            <div className="flex items-center gap-3 pt-0" aria-label="Social media channels">
               {socialLinks.map(({ name, href, icon }) => (
                 <a
                   key={name}
@@ -122,32 +122,29 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Navigation Links Columns */}
-          <div className="md:col-span-8 lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8 items-start">
-            {Object.entries(footerNavigation).map(([category, links]) => (
-              <div key={category} className="flex flex-col">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] mb-4">
-                  {category}
-                </h3>
-                <ul className="space-y-3" role="list">
-                  {links.map(({ href, label }) => (
-                    <li key={label}>
-                      <Link
-                        href={href}
-                        className="text-sm text-[var(--text-secondary)] hover:text-[var(--otach-teal)] transition-colors duration-200 inline-block"
-                      >
-                        {label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+          {Object.entries(footerNavigation).map(([category, links]) => (
+            <div key={category} className="flex flex-col">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] mb-4">
+                {category}
+              </h3>
+              <ul className="space-y-3" role="list">
+                {links.map(({ href, label }) => (
+                  <li key={label}>
+                    <Link
+                      href={href}
+                      className="text-sm text-[var(--text-secondary)] hover:text-[var(--otach-teal)] transition-colors duration-200 inline-block"
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Bottom Bar: Copyright, Legal, Region */}
-        <div className="mt-14 sm:mt-16 pt-6 sm:pt-8 pb-2 border-t border-[var(--border-light)] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
+        <div className="mt-12 py-6 border-t border-[var(--border-light)] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
           <p className="shrink-0">© 2026 Otach Timepieces. All rights reserved.</p>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-[var(--text-secondary)]">

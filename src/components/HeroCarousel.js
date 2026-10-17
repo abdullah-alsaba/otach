@@ -107,7 +107,7 @@ export default function HeroCarousel() {
 
   return (
     <div
-      className="relative w-full max-w-[500px] lg:max-w-[460px] xl:max-w-[500px] mx-auto flex flex-col focus:outline-none"
+      className="relative w-full mx-auto flex flex-col focus:outline-none"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocus={() => setIsPaused(true)}
@@ -122,7 +122,7 @@ export default function HeroCarousel() {
       <div className="relative w-full rounded-3xl overflow-hidden border border-[var(--border-light)] bg-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-300">
         {/* ── Product Photography Frame ── */}
         <div
-          className="relative w-full aspect-[4/3] sm:aspect-square bg-gradient-to-b from-[#FAFAFA] via-[#FCFDFD] to-[#F3F6F6] flex items-center justify-center p-6 sm:p-10 select-none group"
+          className="relative w-full aspect-[4/3] sm:aspect-square bg-gradient-to-b from-[#FAFAFA] via-[#FCFDFD] to-[#F3F6F6] flex items-center justify-center p-6 select-none group"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
@@ -139,7 +139,7 @@ export default function HeroCarousel() {
               return (
                 <div
                   key={slide.id}
-                  className={`absolute inset-0 flex items-center justify-center p-4 sm:p-6 transition-all duration-700 ease-out ${
+                  className={`absolute inset-0 flex items-center justify-center p-6 transition-all duration-700 ease-out ${
                     isActive
                       ? "opacity-100 scale-100 pointer-events-auto"
                       : "opacity-0 scale-95 pointer-events-none"
@@ -171,7 +171,7 @@ export default function HeroCarousel() {
             type="button"
             onClick={goToPrev}
             aria-label="Previous timepiece slide"
-            className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-[var(--text-primary)] hover:text-[var(--otach-teal)] border border-[var(--border-light)] shadow-xs hover:shadow-sm flex items-center justify-center transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-[var(--otach-teal)] cursor-pointer"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-[var(--text-primary)] hover:text-[var(--otach-teal)] border border-[var(--border-light)] shadow-xs hover:shadow-sm flex items-center justify-center transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-[var(--otach-teal)] cursor-pointer"
           >
             <svg
               width="18"
@@ -192,7 +192,7 @@ export default function HeroCarousel() {
             type="button"
             onClick={goToNext}
             aria-label="Next timepiece slide"
-            className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-[var(--text-primary)] hover:text-[var(--otach-teal)] border border-[var(--border-light)] shadow-xs hover:shadow-sm flex items-center justify-center transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-[var(--otach-teal)] cursor-pointer"
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-[var(--text-primary)] hover:text-[var(--otach-teal)] border border-[var(--border-light)] shadow-xs hover:shadow-sm flex items-center justify-center transition-all duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-[var(--otach-teal)] cursor-pointer"
           >
             <svg
               width="18"
@@ -211,9 +211,9 @@ export default function HeroCarousel() {
         </div>
 
         {/* ── Product Information Beneath Image ── */}
-        <div className="p-6 sm:p-7 border-t border-[var(--border-light)] bg-white flex flex-col gap-3">
+        <div className="px-6 pt-6 pb-4 border-t border-[var(--border-light)] bg-white flex flex-col">
           <div>
-            <span className="text-[12px] font-bold uppercase tracking-wider text-[var(--otach-teal)] block mb-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--otach-teal)] block mb-1.5">
               {currentSlide.category}
             </span>
             <div className="flex items-baseline justify-between gap-4">
@@ -231,12 +231,12 @@ export default function HeroCarousel() {
             </div>
           </div>
 
-          <p className="text-sm text-[var(--text-secondary)] line-clamp-2 leading-relaxed">
+          <p className="text-sm text-[var(--text-secondary)] line-clamp-2 leading-relaxed mt-2">
             {currentSlide.feature}
           </p>
 
           {/* Refined Navigation Bar: Slim indicator dashes and CTA link */}
-          <div className="pt-4 mt-1 border-t border-[var(--border-light)] flex items-center justify-between gap-4">
+          <div className="pt-4 mt-4 border-t border-[var(--border-light)] flex items-center justify-between gap-4">
             {/* Slim Dash Indicators */}
             <div
               className="flex items-center gap-1.5"

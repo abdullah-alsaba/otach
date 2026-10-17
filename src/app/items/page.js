@@ -120,7 +120,7 @@ function ProductListingContent() {
   return (
     <div className="bg-[var(--surface-gray-50)] min-h-screen">
       {/* ── Page Header ── */}
-      <div className="border-b border-[var(--border-light)] bg-white pt-12 sm:pt-16 pb-8 sm:pb-10">
+      <div className="border-b border-[var(--border-light)] bg-white pt-14 pb-16">
         <div className="container-otach">
           <span className="text-xs font-bold uppercase tracking-widest text-[var(--otach-teal)] block mb-2">
             Otach Catalog
@@ -135,9 +135,9 @@ function ProductListingContent() {
         </div>
       </div>
 
-      <div className="container-otach pt-8 sm:pt-10 pb-20 sm:pb-28">
+      <div className="container-otach pt-16 pb-24">
         {/* ── Search & Filter Control Panel ── */}
-        <div className="bg-white rounded-3xl border border-[var(--border-light)] p-6 sm:p-8 mb-8 shadow-xs">
+        <div className="bg-white rounded-3xl border border-[var(--border-light)] p-5 sm:p-6 mb-8 shadow-xs">
           {/* Main Controls Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 items-end">
             {/* Search Input */}

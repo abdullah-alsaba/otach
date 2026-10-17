@@ -6,55 +6,49 @@ export default function CategoryCard({ category }) {
     <Link
       href={category.href}
       id={`category-card-${category.slug}`}
-      className="group relative flex flex-col justify-end h-[440px] sm:h-[480px] rounded-3xl overflow-hidden border border-[var(--border-light)] bg-neutral-900 shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-[var(--otach-teal)]"
+      className="group relative flex flex-col h-full min-h-[480px] rounded-3xl overflow-hidden border border-[var(--border-light)] bg-white shadow-xs hover:shadow-md hover:border-[var(--otach-teal)]/30 transition-all duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-[var(--otach-teal)]"
       aria-label={`Explore ${category.name} collection`}
     >
-      {/* ── Background Photography in Dedicated Safe Framing ── */}
-      <Image
-        src={category.image}
-        alt={category.name}
-        fill
-        className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-      />
-
-      {/* Subtle Dark Gradient Overlay for Maximum Readability in Lower Half */}
-      <div
-        className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 via-50% to-transparent transition-opacity duration-300 group-hover:opacity-95"
-        aria-hidden="true"
-      />
-
-      {/* ── Card Content with 24-28px Inner Padding ── */}
-      <div className="relative z-10 p-6 sm:p-7 flex flex-col text-white">
-        <span className="text-xs font-bold uppercase tracking-wider text-[var(--otach-teal-pale)] mb-2 block">
+      {/* ── Text block at top so eyebrow never clips ── */}
+      <div className="relative z-10 p-7 flex flex-col shrink-0">
+        <span className="text-xs font-bold uppercase tracking-wider text-[var(--otach-teal)] mb-2 block">
           {category.count}
         </span>
-        <h3 className="text-xl sm:text-2xl font-bold leading-tight mb-2 group-hover:text-[var(--otach-teal-pale)] transition-colors">
+        <h3 className="text-xl sm:text-2xl font-bold leading-tight mb-3 text-[var(--text-primary)] group-hover:text-[var(--otach-teal)] transition-colors">
           {category.name}
         </h3>
-        <p className="text-xs sm:text-sm text-neutral-200 line-clamp-2 mb-5 leading-relaxed">
+        <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
           {category.description}
         </p>
 
-        <div>
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-white group-hover:text-[var(--otach-teal-pale)] transition-colors">
-            <span>Explore Collection</span>
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="transition-transform duration-200 group-hover:translate-x-1"
-              aria-hidden="true"
-            >
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </span>
-        </div>
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--otach-teal)] group-hover:text-[var(--otach-teal-dark)] transition-colors">
+          <span>Explore Collection</span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="transition-transform duration-200 group-hover:translate-x-1"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </span>
+      </div>
+
+      {/* ── Watch image in its own lower area; never overlaps text ── */}
+      <div className="relative flex-1 min-h-[220px] mx-7 mb-7 rounded-2xl overflow-hidden bg-gradient-to-b from-[#FAFAFA] via-white to-[#F4F7F7] border border-[var(--border-light)]">
+        <Image
+          src={category.image}
+          alt={category.name}
+          fill
+          className="object-contain object-center p-4 transition-transform duration-700 ease-out group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
       </div>
     </Link>
   );

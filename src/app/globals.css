@@ -1,6 +1,6 @@
 @import "tailwindcss";
-@import "@heroui/styles/base";
-@import "@heroui/styles/themes/default";
+@import "@heroui/styles/base" layer(base);
+@import "@heroui/styles/themes/default" layer(theme);
 
 /* ─── Font token (wired from next/font/google) ───────────────── */
 @theme {
@@ -78,29 +78,40 @@
   --heroui-primary-foreground: #ffffff;
 }
 
-/* ─── Base Reset ─────────────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* ─── Base Reset (must live in @layer base so Tailwind v4 utilities win) ── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
 
-body {
-  background: var(--surface-white);
-  color: var(--text-primary);
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
-  line-height: 1.6;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
+  body {
+    background: var(--surface-white);
+    color: var(--text-primary);
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────── */
@@ -126,52 +137,44 @@ body {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ─── Typography Hierarchy ───────────────────────────────────── */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--text-primary);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.25;
-}
-
-/* ─── Layout ─────────────────────────────────────────────────── */
+/* ─── Layout (unlayered so padding cannot be overridden by layered resets) ─ */
 .container-otach {
   width: 100%;
   max-width: 1280px;
   margin-inline: auto;
-  padding-inline: 1rem;
+  padding-inline: 16px;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .container-otach {
-    padding-inline: 1.5rem;
+    padding-inline: 24px;
   }
 }
 
 @media (min-width: 1024px) {
   .container-otach {
-    padding-inline: 2rem;
+    padding-inline: 32px;
   }
 }
 
 .section-spacing {
-  padding-block: 2.75rem;
+  padding-block: 48px;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .section-spacing {
-    padding-block: 3.75rem;
+    padding-block: 64px;
   }
 }
 
 @media (min-width: 1024px) {
   .section-spacing {
-    padding-block: 5.5rem;
+    padding-block: 96px;
   }
 }
 
 /* ─── Reusable button utilities ──────────────────────────────── */
-
+@layer components {
 /* Primary filled — teal bg, white text */
 .btn-primary {
   display: inline-flex;
@@ -179,6 +182,7 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.75rem;
+  min-height: 48px;
   border-radius: var(--radius-full);
   background: var(--otach-teal);
   color: #ffffff;
@@ -211,6 +215,7 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.75rem;
+  min-height: 48px;
   border-radius: var(--radius-full);
   background: transparent;
   color: var(--otach-teal);
@@ -289,6 +294,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-sm {
   padding: 0.5rem 1.25rem;
   font-size: 0.8125rem;
+  min-height: 36px;
 }
 .btn-lg {
   padding: 1rem 2.25rem;
@@ -314,7 +320,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   padding: 0.2rem 0.65rem;
   border-radius: var(--radius-full);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -346,6 +352,7 @@ h1, h2, h3, h4, h5, h6 {
 .input-otach:focus {
   border-color: var(--otach-teal);
   box-shadow: 0 0 0 3px rgb(30 99 99 / 0.12);
+}
 }
 
 /* ─── Divider ────────────────────────────────────────────────── */
