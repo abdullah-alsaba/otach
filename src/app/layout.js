@@ -11,6 +11,7 @@ const inter = Inter({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://otach.com"),
   title: {
     default: "Otach — Premium Timepieces",
     template: "%s | Otach",

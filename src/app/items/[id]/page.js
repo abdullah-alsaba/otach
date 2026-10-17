@@ -9,16 +9,39 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const product = getProductById(id);
-  if (!product) return { title: "Product Not Found — Otach" };
+  if (!product) return { title: "Timepiece Not Found — Otach" };
+
   return {
-    title: `${product.name} — Otach`,
+    title: `${product.name} — Otach Timepieces`,
     description: product.description,
+    openGraph: {
+      title: `${product.name} — Otach Timepieces`,
+      description: product.description,
+      images: [
+        {
+          url: product.image,
+          width: 800,
+          height: 800,
+          alt: product.name,
+        },
+      ],
+    },
   };
 }
 
 export default async function ProductDetailPage({ params }) {
   const { id } = await params;
   const product = getProductById(id);
-  if (!product) notFound();
-  return <ProductDetail product={product} />;
+
+  if (!product) {
+    notFound();
+  }
+
+  // Related products: same category prioritized, excluding current product
+  const relatedProducts = products
+    .filter((p) => p.id !== product.id)
+    .sort((a, b) => (a.category === product.category ? -1 : 1))
+    .slice(0, 3);
+
+  return <ProductDetail product={product} relatedProducts={relatedProducts} />;
 }
