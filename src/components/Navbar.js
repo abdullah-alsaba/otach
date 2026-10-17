@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const shopCategories = [
@@ -14,12 +15,21 @@ const shopCategories = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [prevPathname, setPrevPathname] = useState(pathname);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [mobileShopOpen, setMobileShopOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
+
+  /* Close menus on route change during render */
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setMobileOpen(false);
+    setShopDropdownOpen(false);
+    setCartOpen(false);
+  }
 
   const dropdownRef = useRef(null);
   const cartRef = useRef(null);
@@ -30,13 +40,6 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  /* Close menus on route change */
-  useEffect(() => {
-    setMobileOpen(false);
-    setShopDropdownOpen(false);
-    setCartOpen(false);
-  }, [pathname]);
 
   /* Close dropdowns on outside click */
   useEffect(() => {
@@ -244,7 +247,7 @@ export default function Navbar() {
           >
             {/* Brand symbol: temporary SVG path with clean CSS/SVG watch dial fallback */}
             {!logoError ? (
-              <img
+              <Image
                 src="/images/otach-logo.svg"
                 alt="Otach Symbol"
                 width={28}

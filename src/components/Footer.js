@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const footerNavigation = {
   Collections: [
@@ -86,7 +87,7 @@ export default function Footer() {
               aria-label="Otach Timepieces Homepage"
             >
               {!logoError ? (
-                <img
+                <Image
                   src="/images/otach-logo.svg"
                   alt="Otach Symbol"
                   width={30}

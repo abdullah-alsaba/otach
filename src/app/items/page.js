@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { products } from "@/lib/products";
@@ -26,31 +26,39 @@ const SORT_OPTIONS = [
   { value: "name-asc", label: "Alphabetical: A to Z" },
 ];
 
+function resolveCategory(param) {
+  if (!param) return "All";
+  const match = CATEGORIES.find(
+    (c) => c.value.toLowerCase() === param.toLowerCase()
+  );
+  if (match) return match.value;
+  if (
+    param.toLowerCase() === "automatic" ||
+    param.toLowerCase() === "classic"
+  ) {
+    return "analog";
+  }
+  return "All";
+}
+
 function ProductListingContent() {
   const searchParams = useSearchParams();
   const initialCategoryParam = searchParams.get("category");
 
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
+  const [userCategory, setUserCategory] = useState(null);
+  const [prevParam, setPrevParam] = useState(initialCategoryParam);
   const [priceRangeIndex, setPriceRangeIndex] = useState(0);
   const [sort, setSort] = useState("featured");
 
-  /* Sync category from URL query param if present */
-  useEffect(() => {
-    if (initialCategoryParam) {
-      const match = CATEGORIES.find(
-        (c) => c.value.toLowerCase() === initialCategoryParam.toLowerCase()
-      );
-      if (match) {
-        setCategory(match.value);
-      } else if (
-        initialCategoryParam.toLowerCase() === "automatic" ||
-        initialCategoryParam.toLowerCase() === "classic"
-      ) {
-        setCategory("analog");
-      }
-    }
-  }, [initialCategoryParam]);
+  /* Reset manual category selection if URL category param changes */
+  if (prevParam !== initialCategoryParam) {
+    setPrevParam(initialCategoryParam);
+    setUserCategory(null);
+  }
+
+  const category = userCategory ?? resolveCategory(initialCategoryParam);
+  const setCategory = (val) => setUserCategory(val);
 
   /* Filter and Sort logic */
   const filtered = useMemo(() => {
