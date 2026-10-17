@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import ProductCard from "@/components/ProductCard";
-import Footer from "@/components/Footer";
 import { products, categories } from "@/lib/products";
 
 const PRICE_RANGES = [
@@ -242,7 +241,6 @@ export default function ItemsPage() {
           )}
         </div>
       </div>
-      <Footer />
     </>
   );
 }

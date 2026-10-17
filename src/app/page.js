@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import NewsletterForm from "@/components/NewsletterForm";
 import { products } from "@/lib/products";
@@ -316,7 +315,6 @@ export default function HomePage() {
       <BrandBanner />
       <WhyUsSection />
       <NewsletterSection />
-      <Footer />
     </>
   );
 }
