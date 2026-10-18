@@ -7,7 +7,7 @@ import { toast } from "@/lib/notify";
 import RequireAuth from "@/components/RequireAuth";
 import { useAuth } from "@/context/AuthContext";
 import { deleteOwnedItem, getOwnedItems } from "@/lib/items";
-import { getFirestoreErrorMessage } from "@/lib/auth-errors";
+import { getFirestoreErrorMessage, logFirestoreError } from "@/lib/auth-errors";
 
 function ManageItemImage({ src, alt }) {
   const isRemote = typeof src === "string" && /^https?:\/\//.test(src);
@@ -50,7 +50,9 @@ function ManageProductsContent() {
       .catch((err) => {
         if (ignore) return;
         /* A failed load is reported once, in the inline error state below, so
-           the message is never raised twice for the same request. */
+           the message is never raised twice for the same request. The real
+           Firebase code goes to the console in development. */
+        logFirestoreError("Manage Products — getOwnedItems()", err);
         setLoadError(getFirestoreErrorMessage(err));
         setLoadState("error");
       });
@@ -80,7 +82,9 @@ function ManageProductsContent() {
       toast.success(message);
     } catch (err) {
       /* The inline banner is used for confirmations, so a failed removal is
-         announced once through the toast. */
+         announced once through the toast. The real Firebase code goes to the
+         console in development. */
+      logFirestoreError("Manage Products — deleteOwnedItem()", err);
       toast.error(getFirestoreErrorMessage(err));
     } finally {
       setIsDeleting(false);

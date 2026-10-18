@@ -86,6 +86,21 @@ export function getFirestoreErrorMessage(error) {
   }
 }
 
+/**
+ * Development-only diagnostics. The UI deliberately replaces Firebase codes
+ * with shopper-friendly copy, which makes a failure impossible to diagnose in
+ * the browser. In development the code and message are written to the console
+ * instead — codes, messages and the failing operation only. No project config,
+ * credentials or user data are ever logged.
+ */
+export function logFirestoreError(scope, error) {
+  if (process.env.NODE_ENV === "production") return;
+
+  const code = error?.code || "unknown-error";
+  const message = error?.message || String(error);
+  console.error(`[Otach] ${scope} — Firebase error code: ${code} (${message})`);
+}
+
 export function isSafeInternalPath(path) {
   return typeof path === "string" && path.startsWith("/") && !path.startsWith("//") && !path.includes("://");
 }

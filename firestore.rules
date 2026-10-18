@@ -1,29 +1,46 @@
 // Otach — Firestore security rules.
 //
-// Data model: one `items` collection holding member-created catalogue entries.
-// Every document carries `userId` = the Firebase Auth uid of its creator, and
-// these rules make that ownership server-enforced:
-//   * read   — only the owner (the client query carries where("userId","==",uid))
-//   * create — signed in, and the new document's userId must be the caller's uid
-//   * update — only the owner, and ownership cannot be handed to someone else
-//   * delete — only the owner
-// The storefront catalogue itself is static data in the app, so no public read
-// of this collection is granted.
+// Data model: a single root collection, `items`, holding member-created
+// catalogue entries. Every document carries `userId` = the Firebase Auth uid of
+// its creator (`auth.currentUser.uid`, written by createItem() in
+// src/lib/items.js). These rules make that ownership server-enforced:
 //
-// These rules are the source of truth but they are NOT deployed by any tool in
-// this repository (there is no firebase.json / .firebaserc). They must be
-// published in Firebase Console → Firestore Database → Rules → Publish.
+//   read   — only the owner. This is legal for the Manage Products list because
+//            getOwnedItems() queries where("userId", "==", uid): rules are not
+//            filters, so a list request must carry the same constraint the rules
+//            check, otherwise Firestore rejects the whole query.
+//   create — signed in, the new document's userId must be the caller's own uid,
+//            and the payload must pass isValidItem().
+//   update — only the owner, and ownership is immutable, so a document can never
+//            be handed to another account.
+//   delete — only the owner.
+//
+// The storefront catalogue is static data in the app (src/lib/products.js), so
+// the app never reads this collection anonymously and no public read is granted.
+// Anything not matched below stays denied — Firestore already denies paths with
+// no matching rule, and the catch-all states that explicitly.
+//
+// Deployment: nothing in this repository publishes these rules (there is no
+// firebase.json / .firebaserc), so they must be pasted into
+// Firebase Console → Firestore Database → Rules → Publish for project
+// otach-4c477. Until that happens the project keeps running its previous
+// ruleset and every product write fails with `permission-denied`.
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
     function isSignedIn() {
       return request.auth != null;
     }
 
+    // The stored document must already belong to the caller.
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    // Exactly the eight fields the Add Product form writes, each within the
+    // bounds the form enforces.
     function isValidItem() {
       let data = request.resource.data;
       return data.keys().hasOnly([
@@ -56,17 +73,30 @@ service cloud.firestore {
     }
 
     match /items/{itemId} {
-      allow read: if isOwner(resource.data.userId);
+      // Single-document reads (getDoc in getOwnedItem) resolve resource.data;
+      // list reads (getDocs in getOwnedItems) are only granted because the query
+      // carries where("userId", "==", uid). The comparison is written inline
+      // rather than wrapped in a helper because query analysis reads this
+      // expression directly.
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
 
       allow create: if isSignedIn()
         && request.auth.uid == request.resource.data.userId
         && isValidItem();
 
+      // isOwner() pins the caller to the stored owner; the second condition
+      // pins the stored owner to itself, so `userId` can never be rewritten.
       allow update: if isOwner(resource.data.userId)
-        && request.auth.uid == request.resource.data.userId
+        && request.resource.data.userId == resource.data.userId
         && isValidItem();
 
       allow delete: if isOwner(resource.data.userId);
+    }
+
+    // No other collection exists in this app; nothing else is readable or
+    // writable.
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import ProductDetail from "@/components/ProductDetail";
 import { useAuth } from "@/context/AuthContext";
 import { getOwnedItem } from "@/lib/items";
-import { getFirestoreErrorMessage } from "@/lib/auth-errors";
+import { getFirestoreErrorMessage, logFirestoreError } from "@/lib/auth-errors";
 
 export default function OwnedItemDetail({ id }) {
   const { user, loading: authLoading } = useAuth();
@@ -45,7 +45,9 @@ export default function OwnedItemDetail({ id }) {
         if (!cancelled) {
           setItem(null);
           /* The page itself explains the failure below, so the reason is stated
-             once instead of also being raised as a transient notification. */
+             once instead of also being raised as a transient notification. The
+             real Firebase code goes to the console in development. */
+          logFirestoreError("Timepiece Detail — getOwnedItem()", error);
           setErrorMessage(getFirestoreErrorMessage(error));
           setStatus("error");
         }

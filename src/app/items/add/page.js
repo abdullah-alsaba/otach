@@ -7,7 +7,7 @@ import { toast } from "@/lib/notify";
 import RequireAuth from "@/components/RequireAuth";
 import { useAuth } from "@/context/AuthContext";
 import { createItem } from "@/lib/items";
-import { getFirestoreErrorMessage } from "@/lib/auth-errors";
+import { getFirestoreErrorMessage, logFirestoreError } from "@/lib/auth-errors";
 
 const CATEGORY_OPTIONS = [
   { value: "analog", label: "Mechanical & Analog" },
@@ -107,9 +107,9 @@ function AddProductForm() {
       });
       toast.success("Your timepiece has been added to your catalog.");
     } catch (err) {
-      // Shoppers see friendly copy, so the raw Firebase code is logged here
-      // instead. Open DevTools → Console to read it (e.g. "permission-denied").
-      console.error("[Otach] Failed to save timepiece:", err?.code, err);
+      /* Shoppers get friendly copy, so the real Firebase code is written to the
+         console in development instead. */
+      logFirestoreError("Add Product — createItem()", err);
 
       const message = getFirestoreErrorMessage(err);
       setSubmissionStatus({
