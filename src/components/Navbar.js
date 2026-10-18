@@ -107,12 +107,12 @@ export default function Navbar() {
     setIsLoggingOut(true);
     try {
       await logout();
-      toast.success("You have been signed out.");
+      toast.success("You've been signed out.");
       setAccountOpen(false);
       setMobileOpen(false);
       router.push("/");
     } catch {
-      toast.error("We could not sign you out. Please try again.");
+      toast.error("We couldn't sign you out. Please try again.");
     } finally {
       setIsLoggingOut(false);
     }
@@ -122,7 +122,7 @@ export default function Navbar() {
 
   const handleIncreaseQuantity = (item) => {
     if (item.quantity >= maxQuantityPerItem) {
-      toast.warning(`You can order up to ${maxQuantityPerItem} of the ${item.title}.`);
+      toast.warning(`You can keep up to ${maxQuantityPerItem} of this timepiece in your bag.`);
       return;
     }
 
@@ -140,7 +140,7 @@ export default function Navbar() {
 
   const handleRemoveItem = (item) => {
     removeItem(item.id);
-    toast.success(`Removed ${item.title} from your bag.`);
+    toast.success(`${item.title} has been removed from your bag.`);
   };
 
   return (

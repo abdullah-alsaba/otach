@@ -105,12 +105,12 @@ function AddProductForm() {
         title: "Timepiece Saved",
         message: "Your timepiece has been added to your catalog.",
       });
-      toast.success("Timepiece saved to your catalog.");
+      toast.success("Your timepiece has been added to your catalog.");
     } catch (err) {
       const message = getFirestoreErrorMessage(err);
       setSubmissionStatus({
         type: "error",
-        title: "Submission Error",
+        title: "Timepiece Not Saved",
         message,
       });
       toast.error(message);

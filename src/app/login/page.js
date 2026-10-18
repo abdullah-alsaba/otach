@@ -16,6 +16,7 @@ import {
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { getAuthErrorMessage, isSafeInternalPath } from "@/lib/auth-errors";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 function LoginForm() {
   const router = useRouter();
@@ -61,7 +62,7 @@ function LoginForm() {
     setInfoMessage("");
 
     if (!validate()) {
-      toast.warning("Please fix the highlighted fields and try again.");
+      toast.warning("Please check the highlighted details.");
       return;
     }
 
@@ -73,7 +74,7 @@ function LoginForm() {
         rememberMe ? browserLocalPersistence : browserSessionPersistence
       );
       await signInWithEmailAndPassword(auth, email.trim(), password);
-      toast.success("Signed in successfully. Welcome back to Otach.");
+      toast.success("Welcome back. It's good to have you here.");
       router.replace(nextPath || "/");
     } catch (err) {
       const message = getAuthErrorMessage(err);
@@ -90,14 +91,14 @@ function LoginForm() {
 
     if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
       setErrors({ email: "Enter your email address to receive a reset link." });
-      toast.warning("Enter a valid email address to receive a reset link.");
+      toast.warning("Please enter your email address to receive a reset link.");
       return;
     }
 
     try {
       await sendPasswordResetEmail(auth, trimmedEmail);
       setInfoMessage("If an account exists for this email, a password reset link has been sent.");
-      toast.success("Password reset email sent.");
+      toast.success("Password reset instructions are on their way to your inbox.");
     } catch (err) {
       const message = getAuthErrorMessage(err);
       setErrors({ form: message });
@@ -186,6 +187,18 @@ function LoginForm() {
               <span>{infoMessage}</span>
             </div>
           )}
+
+          {/* Google sign-in */}
+          <GoogleSignInButton nextPath={nextPath || "/"} disabled={isLoading} />
+
+          {/* Divider between Google and the email form */}
+          <div className="flex items-center gap-3 my-6" aria-hidden="true">
+            <span className="h-px flex-1 bg-[var(--border-light)]" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+              or
+            </span>
+            <span className="h-px flex-1 bg-[var(--border-light)]" />
+          </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
@@ -327,7 +340,11 @@ function LoginForm() {
             <p className="text-xs text-[var(--text-secondary)]">
               Don&apos;t have an Otach client account?{" "}
               <Link
-                href="/register"
+                href={
+                  nextPath && nextPath !== "/"
+                    ? `/register?next=${encodeURIComponent(nextPath)}`
+                    : "/register"
+                }
                 className="font-bold text-[var(--otach-teal)] hover:underline ml-1"
               >
                 Create Account

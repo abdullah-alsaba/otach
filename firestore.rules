@@ -1,3 +1,18 @@
+// Otach — Firestore security rules.
+//
+// Data model: one `items` collection holding member-created catalogue entries.
+// Every document carries `userId` = the Firebase Auth uid of its creator, and
+// these rules make that ownership server-enforced:
+//   * read   — only the owner (the client query carries where("userId","==",uid))
+//   * create — signed in, and the new document's userId must be the caller's uid
+//   * update — only the owner, and ownership cannot be handed to someone else
+//   * delete — only the owner
+// The storefront catalogue itself is static data in the app, so no public read
+// of this collection is granted.
+//
+// These rules are the source of truth but they are NOT deployed by any tool in
+// this repository (there is no firebase.json / .firebaserc). They must be
+// published in Firebase Console → Firestore Database → Rules → Publish.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {

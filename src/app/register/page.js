@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@heroui/react";
 import { toast } from "@/lib/notify";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { getAuthErrorMessage } from "@/lib/auth-errors";
+import { getAuthErrorMessage, isSafeInternalPath } from "@/lib/auth-errors";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,11 +28,13 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [infoMessage, setInfoMessage] = useState("");
 
+  const nextPath = isSafeInternalPath(searchParams.get("next")) ? searchParams.get("next") : "/";
+
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace("/");
+      router.replace(nextPath || "/");
     }
-  }, [authLoading, user, router]);
+  }, [authLoading, user, router, nextPath]);
 
   const validate = () => {
     const errs = {};
@@ -69,7 +73,7 @@ export default function RegisterPage() {
     setInfoMessage("");
 
     if (!validate()) {
-      toast.warning("Please fix the highlighted fields and try again.");
+      toast.warning("Please check the highlighted details.");
       return;
     }
 
@@ -79,8 +83,8 @@ export default function RegisterPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
       await updateProfile(userCredential.user, { displayName: name.trim() });
       setInfoMessage("Account created. Redirecting…");
-      toast.success("Your Otach account has been created.");
-      router.replace("/");
+      toast.success("Your Otach account is ready.");
+      router.replace(nextPath || "/");
     } catch (err) {
       const message = getAuthErrorMessage(err);
       setErrors({ form: message });
@@ -171,6 +175,18 @@ export default function RegisterPage() {
               <span>{infoMessage}</span>
             </div>
           )}
+
+          {/* Google sign-in */}
+          <GoogleSignInButton nextPath={nextPath || "/"} disabled={isLoading} />
+
+          {/* Divider between Google and the email form */}
+          <div className="flex items-center gap-3 my-6" aria-hidden="true">
+            <span className="h-px flex-1 bg-[var(--border-light)]" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+              or
+            </span>
+            <span className="h-px flex-1 bg-[var(--border-light)]" />
+          </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
@@ -408,7 +424,11 @@ export default function RegisterPage() {
             <p className="text-xs text-[var(--text-secondary)]">
               Already registered with Otach?{" "}
               <Link
-                href="/login"
+                href={
+                  nextPath && nextPath !== "/"
+                    ? `/login?next=${encodeURIComponent(nextPath)}`
+                    : "/login"
+                }
                 className="font-bold text-[var(--otach-teal)] hover:underline ml-1"
               >
                 Sign In
@@ -418,5 +438,19 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container-otach min-h-[50vh] flex items-center justify-center py-20">
+          <p className="text-sm text-[var(--text-muted)]">Loading registration…</p>
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 }

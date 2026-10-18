@@ -1,3 +1,15 @@
+/**
+ * Otach — member-created catalogue items.
+ *
+ * Ownership lives in a single field, `userId`, holding the Firebase Auth uid of
+ * the member who created the document. Create, list and delete all read that
+ * same field, and `firestore.rules` enforces it server-side, so a member can
+ * only ever touch their own documents.
+ *
+ * Documents written without that field are never claimed by anybody: the owner
+ * query filters on `userId`, so an unowned document stays untouched in Firestore
+ * and simply does not appear in anyone's catalogue.
+ */
 import {
   addDoc,
   collection,
@@ -62,6 +74,11 @@ export async function createItem({ userId, title, shortDescription, description,
   return docRef.id;
 }
 
+/**
+ * Lists the documents owned by `userId`. The `where` constraint is what makes
+ * the query legal under the security rules — a list request must carry the same
+ * ownership filter the rules check, otherwise Firestore rejects the whole query.
+ */
 export async function getOwnedItems(userId) {
   if (!userId) return [];
 

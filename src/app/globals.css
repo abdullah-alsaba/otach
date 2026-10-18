@@ -481,6 +481,13 @@
   background: var(--otach-teal-light);
 }
 
+/* Entrance/exit is a short, eased slide rather than the library's bounce. */
+.otach-toast-container .Toastify__slide-enter--top-right,
+.otach-toast-container .Toastify__slide-exit--top-right {
+  animation-duration: 0.28s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* Mobile: keep the cards inside the viewport with comfortable padding. */
 @media (max-width: 600px) {
   .otach-toast-container {

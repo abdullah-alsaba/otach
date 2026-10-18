@@ -22,7 +22,7 @@ export default function CartPage() {
 
   const handleIncrease = (item) => {
     if (item.quantity >= maxQuantityPerItem) {
-      toast.warning(`You can order up to ${maxQuantityPerItem} of the ${item.title}.`);
+      toast.warning(`You can keep up to ${maxQuantityPerItem} of this timepiece in your bag.`);
       return;
     }
 
@@ -48,7 +48,7 @@ export default function CartPage() {
 
     if (numeric > maxQuantityPerItem) {
       updateQuantity(item.id, maxQuantityPerItem);
-      toast.warning(`You can order up to ${maxQuantityPerItem} of the ${item.title}.`);
+      toast.warning(`You can keep up to ${maxQuantityPerItem} of this timepiece in your bag.`);
       return;
     }
 
@@ -57,12 +57,12 @@ export default function CartPage() {
 
   const handleRemove = (item) => {
     removeItem(item.id);
-    toast.success(`Removed ${item.title} from your bag.`);
+    toast.success(`${item.title} has been removed from your bag.`);
   };
 
   const handleClear = () => {
     clearCart();
-    toast.success("Your bag has been cleared.");
+    toast.success("Your shopping bag is now empty.");
   };
 
   return (

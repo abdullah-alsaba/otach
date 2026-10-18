@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { toast } from "@/lib/notify";
 import ProductDetail from "@/components/ProductDetail";
 import { useAuth } from "@/context/AuthContext";
 import { getOwnedItem } from "@/lib/items";
@@ -12,6 +11,7 @@ export default function OwnedItemDetail({ id }) {
   const { user, loading: authLoading } = useAuth();
   const [item, setItem] = useState(null);
   const [status, setStatus] = useState("loading");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -44,8 +44,10 @@ export default function OwnedItemDetail({ id }) {
       } catch (error) {
         if (!cancelled) {
           setItem(null);
-          setStatus("missing");
-          toast.error(getFirestoreErrorMessage(error));
+          /* The page itself explains the failure below, so the reason is stated
+             once instead of also being raised as a transient notification. */
+          setErrorMessage(getFirestoreErrorMessage(error));
+          setStatus("error");
         }
       }
     }
@@ -65,15 +67,19 @@ export default function OwnedItemDetail({ id }) {
     );
   }
 
-  if (status === "missing" || !item) {
+  if (status === "missing" || status === "error" || !item) {
+    const isError = status === "error";
+
     return (
       <div className="container-otach min-h-[60vh] flex flex-col items-center justify-center text-center py-20">
-        <span className="badge-otach badge-teal mb-4">404 Error</span>
+        <span className="badge-otach badge-teal mb-4">{isError ? "Unavailable" : "404 Error"}</span>
         <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-[var(--text-primary)] mb-4">
-          Timepiece Not Found
+          {isError ? "Timepiece Unavailable" : "Timepiece Not Found"}
         </h1>
         <p className="text-[var(--text-secondary)] max-w-md mb-8">
-          The page or timepiece you are looking for may have been moved, archived, or does not exist.
+          {isError
+            ? errorMessage
+            : "The page or timepiece you are looking for may have been moved, archived, or does not exist."}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link href="/" className="btn-primary">

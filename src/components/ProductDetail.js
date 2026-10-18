@@ -31,21 +31,21 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
   const reportAddResult = (result) => {
     switch (result.status) {
       case "added":
-        toast.success(`Added ${result.quantity} × ${product.name} to your bag.`);
+        toast.success(`${product.name} has been added to your bag.`);
         return true;
       case "merged":
-        toast.success(`${product.name} is in your bag — quantity updated to ${result.totalQuantity}.`);
+        toast.success(
+          `${product.name} is already in your bag — your bag now holds ${result.totalQuantity}.`
+        );
         return true;
       case "limit":
-        toast.warning(
-          `You already have the maximum of ${maxQuantityPerItem} of this timepiece in your bag.`
-        );
+        toast.warning(`You can keep up to ${maxQuantityPerItem} of this timepiece in your bag.`);
         return false;
       case "out-of-stock":
         toast.error(`${product.name} is currently out of stock.`);
         return false;
       default:
-        toast.error("This timepiece could not be added to your bag. Please try again.");
+        toast.error("We couldn't complete that request. Please try again.");
         return false;
     }
   };
@@ -57,7 +57,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
     if (user) return true;
 
     const returnPath = pathname || `/items/${product.id}`;
-    toast.info("Please sign in to add timepieces to your bag.");
+    toast.info("Please sign in to continue with your purchase.");
     router.push(`/login?next=${encodeURIComponent(returnPath)}`);
     return false;
   };

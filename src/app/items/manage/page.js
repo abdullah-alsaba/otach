@@ -33,7 +33,9 @@ function ManageProductsContent() {
   const [reloadToken, setReloadToken] = useState(0);
 
   /* Loads the signed-in member's own catalog. State is only written from inside
-     the promise callbacks, which keeps the effect free of cascading renders. */
+     the promise callbacks, which keeps the effect free of cascading renders.
+     The user is already resolved here — RequireAuth only mounts this content
+     once Firebase Auth has reported a signed-in account. */
   useEffect(() => {
     if (!user?.uid) return;
 
@@ -47,10 +49,10 @@ function ManageProductsContent() {
       })
       .catch((err) => {
         if (ignore) return;
-        const message = getFirestoreErrorMessage(err);
-        setLoadError(message);
+        /* A failed load is reported once, in the inline error state below, so
+           the message is never raised twice for the same request. */
+        setLoadError(getFirestoreErrorMessage(err));
         setLoadState("error");
-        toast.error(message);
       });
 
     return () => {
@@ -77,9 +79,9 @@ function ManageProductsContent() {
       setNotification(message);
       toast.success(message);
     } catch (err) {
-      const message = getFirestoreErrorMessage(err);
-      setNotification(message);
-      toast.error(message);
+      /* The inline banner is used for confirmations, so a failed removal is
+         announced once through the toast. */
+      toast.error(getFirestoreErrorMessage(err));
     } finally {
       setIsDeleting(false);
     }
@@ -160,7 +162,9 @@ function ManageProductsContent() {
               <p className="text-xs text-[var(--text-secondary)]">
                 {loadState === "loading"
                   ? "Loading your timepieces…"
-                  : `Showing ${productList.length} timepiece${productList.length === 1 ? "" : "s"} you own.`}
+                  : loadState === "ready"
+                    ? `Showing ${productList.length} timepiece${productList.length === 1 ? "" : "s"} you own.`
+                    : "Your catalog isn't available right now."}
               </p>
             </div>
           </div>
@@ -183,13 +187,13 @@ function ManageProductsContent() {
         ) : productList.length === 0 ? (
           <div className="card-otach p-12 text-center bg-white shadow-xs">
             <p className="text-sm font-bold text-[var(--text-primary)] mb-2">
-              No timepieces in your catalog yet
+              Your catalog is empty
             </p>
             <p className="text-xs text-[var(--text-secondary)] mb-6">
-              Add a timepiece to start managing your collection.
+              Add your first timepiece to begin managing your collection.
             </p>
             <Link href="/items/add" className="btn-primary btn-sm">
-              Add New Timepiece
+              Add Your First Timepiece
             </Link>
           </div>
         ) : (

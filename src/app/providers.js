@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { RouterProvider } from "@heroui/react";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, Slide } from "react-toastify";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 
@@ -26,6 +26,7 @@ export function Providers({ children }) {
         draggable
         limit={3}
         theme="light"
+        transition={Slide}
         className="otach-toast-container"
       />
     </RouterProvider>

@@ -74,12 +74,12 @@ function CheckoutContent() {
     setSubmissionNotice("");
 
     if (items.length === 0) {
-      toast.warning("Your bag is empty — add a timepiece before checking out.");
+      toast.warning("Your bag is empty. Add a timepiece to continue.");
       return;
     }
 
     if (!validate()) {
-      toast.warning("Please complete the highlighted delivery details.");
+      toast.warning("Please check the highlighted delivery details.");
       return;
     }
 
@@ -87,11 +87,11 @@ function CheckoutContent() {
        can genuinely be created here. We never report a false success and we
        never clear the bag for an order that was not accepted. */
     setSubmissionNotice(
-      "Order submission is not available: this storefront has no order or payment service connected. " +
-        "Firestore is only used for your own catalogue items, so nothing was charged and no order was recorded. " +
-        "Your bag has been kept so you can complete the purchase once checkout is integrated."
+      "Checkout isn't available yet: this storefront has no order or payment service connected, " +
+        "so nothing was charged and no order was recorded. Your bag has been kept so you can " +
+        "complete the purchase once checkout goes live."
     );
-    toast.warning("Order placement is not available — no order or payment service is connected.");
+    toast.warning("Checkout isn't available yet — no payment service is connected.");
   };
 
   return (
