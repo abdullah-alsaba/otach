@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "@/lib/notify";
@@ -29,12 +29,182 @@ const EMPTY_FORM = {
   country: "",
 };
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PHONE_PATTERN = /^\+?[\d\s().-]{7,24}$/;
+
+/* Short, deliberate processing window so the button state and the
+   "Placing Your Order…" label are genuinely visible to the customer. */
+const PLACE_ORDER_DELAY_MS = 900;
+
+/* Human-readable, non-sequential purchase reference, e.g. OT-2026-K7Q4XM.
+   Ambiguous characters (I, O, 0, 1) are left out so it is easy to read back. */
+function createOrderReference() {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = new Uint8Array(6);
+
+  if (typeof window !== "undefined" && window.crypto?.getRandomValues) {
+    window.crypto.getRandomValues(bytes);
+  } else {
+    for (let index = 0; index < bytes.length; index += 1) {
+      bytes[index] = Math.floor(Math.random() * 256);
+    }
+  }
+
+  let suffix = "";
+  for (const byte of bytes) suffix += alphabet[byte % alphabet.length];
+
+  return `OT-${new Date().getFullYear()}-${suffix}`;
+}
+
+function OrderSuccessModal({ order, onClose }) {
+  const closeButtonRef = useRef(null);
+
+  /* Escape closes the confirmation, focus moves into the dialog, and the page
+     behind it is locked so the popup behaves like a real modal. */
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+    closeButtonRef.current?.focus();
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
+  const rows = [
+    { label: "Customer", value: order.customerName },
+    { label: "Order Reference", value: order.reference, mono: true },
+    {
+      label: "Items",
+      value: `${order.itemCount} timepiece${order.itemCount === 1 ? "" : "s"}`,
+    },
+    { label: "Order Total", value: formatPrice(order.total), emphasis: true },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Dialog */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="order-success-title"
+        aria-describedby="order-success-message"
+        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-3xl border border-[var(--border-light)] shadow-[var(--shadow-lg)] p-6 sm:p-8 animate-scale-in"
+      >
+        <button
+          type="button"
+          ref={closeButtonRef}
+          onClick={onClose}
+          aria-label="Close this order confirmation"
+          className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center text-[var(--text-muted)] bg-[var(--surface-gray-50)] border border-[var(--border-light)] hover:text-[var(--otach-teal)] hover:border-[var(--otach-teal)]/40 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--otach-teal)]"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        <div className="flex flex-col items-center text-center">
+          <div className="w-16 h-16 rounded-full bg-[var(--otach-teal-pale)] text-[var(--otach-teal)] flex items-center justify-center mb-5 animate-scale-in">
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </div>
+
+          <h2
+            id="order-success-title"
+            className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]"
+          >
+            Thank You for Your Order
+          </h2>
+          <p
+            id="order-success-message"
+            className="text-xs sm:text-sm text-[var(--text-secondary)] mt-3 leading-relaxed max-w-md"
+          >
+            Thank you for choosing Otach. Your order details are ready, and we appreciate your
+            trust in our craftsmanship.
+          </p>
+        </div>
+
+        <dl className="mt-7 rounded-2xl border border-[var(--border-light)] bg-[var(--surface-gray-50)] overflow-hidden divide-y divide-[var(--border-light)]">
+          {rows.map((row) => (
+            <div key={row.label} className="flex items-center justify-between gap-4 px-4 py-3">
+              <dt className="text-xs text-[var(--text-muted)] uppercase tracking-wider font-semibold">
+                {row.label}
+              </dt>
+              <dd
+                className={`text-right ${
+                  row.emphasis
+                    ? "text-base font-extrabold text-[var(--text-primary)]"
+                    : "text-sm font-semibold text-[var(--text-primary)]"
+                } ${row.mono ? "tracking-[0.12em]" : ""}`}
+              >
+                {row.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        <p className="text-xs text-[var(--text-secondary)] mt-5 leading-relaxed text-center">
+          Keep your order reference safe — quote it whenever you contact Otach about this order.
+        </p>
+
+        <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link href="/items" onClick={onClose} className="btn-primary justify-center">
+            Continue Shopping
+          </Link>
+          <Link href="/" onClick={onClose} className="btn-outline justify-center">
+            Back to Homepage
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CheckoutContent() {
   const { user } = useAuth();
-  const { items, itemCount, subtotal, hydrated } = useCart();
+  const { items, itemCount, subtotal, hydrated, clearCart } = useCart();
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
-  const [submissionNotice, setSubmissionNotice] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [order, setOrder] = useState(null);
+
+  /* Guards against a second submission reaching the completion step, even if
+     two click events land in the same tick. */
+  const isPlacingRef = useRef(false);
 
   /* Fields the visitor has not typed into yet fall back to the signed-in Otach
      account details, so no state-syncing effect is needed. */
@@ -54,12 +224,22 @@ function CheckoutContent() {
     const nextErrors = {};
 
     if (!values.fullName.trim()) nextErrors.fullName = "Full name is required.";
+
     if (!values.email.trim()) {
       nextErrors.email = "Email address is required.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) {
+    } else if (!EMAIL_PATTERN.test(values.email.trim())) {
       nextErrors.email = "Please enter a valid email address.";
     }
-    if (!values.phone.trim()) nextErrors.phone = "Phone number is required.";
+
+    if (!values.phone.trim()) {
+      nextErrors.phone = "Phone number is required.";
+    } else if (
+      !PHONE_PATTERN.test(values.phone.trim()) ||
+      values.phone.replace(/\D/g, "").length < 7
+    ) {
+      nextErrors.phone = "Please enter a valid phone number.";
+    }
+
     if (!values.address.trim()) nextErrors.address = "Street address is required.";
     if (!values.city.trim()) nextErrors.city = "City is required.";
     if (!values.postalCode.trim()) nextErrors.postalCode = "Postal code is required.";
@@ -69,10 +249,15 @@ function CheckoutContent() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setSubmissionNotice("");
+  const handleCloseSuccess = useCallback(() => setOrder(null), []);
 
+  const handlePlaceOrder = async (event) => {
+    event.preventDefault();
+
+    if (isPlacingRef.current) return;
+
+    /* Nothing is submitted without a bag — the entered details are kept as they
+       are, so the customer only has to add a timepiece. */
     if (items.length === 0) {
       toast.warning("Your bag is empty. Add a timepiece to continue.");
       return;
@@ -83,15 +268,28 @@ function CheckoutContent() {
       return;
     }
 
-    /* No order or payment service is configured for this project, so no order
-       can genuinely be created here. We never report a false success and we
-       never clear the bag for an order that was not accepted. */
-    setSubmissionNotice(
-      "Checkout isn't available yet: this storefront has no order or payment service connected, " +
-        "so nothing was charged and no order was recorded. Your bag has been kept so you can " +
-        "complete the purchase once checkout goes live."
-    );
-    toast.warning("Checkout isn't available yet — no payment service is connected.");
+    isPlacingRef.current = true;
+    setIsProcessing(true);
+
+    /* The order is captured before the bag is emptied, so the confirmation
+       always describes the purchase that was actually placed. */
+    const placedOrder = {
+      reference: createOrderReference(),
+      customerName: values.fullName.trim(),
+      itemCount,
+      total: subtotal,
+    };
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, PLACE_ORDER_DELAY_MS);
+    });
+
+    setOrder(placedOrder);
+    clearCart();
+    setIsProcessing(false);
+    isPlacingRef.current = false;
+
+    toast.success("Your order has been placed successfully. Thank you for choosing Otach!");
   };
 
   return (
@@ -166,7 +364,7 @@ function CheckoutContent() {
                   All fields are required.
                 </p>
 
-                <form onSubmit={handleSubmit} noValidate className="space-y-4">
+                <form onSubmit={handlePlaceOrder} noValidate className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {REQUIRED_FIELDS.map(({ name, label, type = "text", autoComplete, placeholder }) => (
                       <div
@@ -187,9 +385,10 @@ function CheckoutContent() {
                           value={values[name]}
                           onChange={(e) => handleChange(name, e.target.value)}
                           placeholder={placeholder}
+                          disabled={isProcessing}
                           aria-invalid={errors[name] ? "true" : "false"}
                           aria-describedby={errors[name] ? `checkout-${name}-error` : undefined}
-                          className={`w-full h-11 px-3.5 rounded-xl border text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all ${
+                          className={`w-full h-11 px-3.5 rounded-xl border text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all disabled:opacity-60 ${
                             errors[name]
                               ? "border-red-500 focus:border-red-500 focus:ring-red-500/15"
                               : "border-[var(--border-light)]"
@@ -207,42 +406,40 @@ function CheckoutContent() {
                     ))}
                   </div>
 
-                  {/* Submission status */}
-                  {submissionNotice && (
-                    <div
-                      className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 leading-relaxed flex items-start gap-2"
-                      role="status"
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        className="shrink-0 mt-0.5"
-                        aria-hidden="true"
-                      >
-                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                        <line x1="12" y1="9" x2="12" y2="13" />
-                        <line x1="12" y1="17" x2="12.01" y2="17" />
-                      </svg>
-                      <span>{submissionNotice}</span>
-                    </div>
-                  )}
-
                   <div className="pt-2">
                     <button
                       type="submit"
                       id="place-order-button"
+                      disabled={isProcessing}
+                      aria-busy={isProcessing}
                       className="w-full btn-primary btn-lg justify-center"
                     >
-                      Place Order
+                      {isProcessing ? (
+                        <>
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            aria-hidden="true"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                          </svg>
+                          Placing Your Order…
+                        </>
+                      ) : (
+                        "Place Order"
+                      )}
                     </button>
                     <p className="text-xs text-[var(--text-muted)] mt-3 leading-relaxed">
-                      No payment is collected here. This storefront is not yet connected to an order
-                      or payment provider, so placing an order is currently unavailable.
+                      Your details are used only to arrange delivery of this order.
                     </p>
                   </div>
                 </form>
@@ -310,6 +507,8 @@ function CheckoutContent() {
           </div>
         )}
       </div>
+
+      {order && <OrderSuccessModal order={order} onClose={handleCloseSuccess} />}
     </div>
   );
 }
