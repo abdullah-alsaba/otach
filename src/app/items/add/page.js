@@ -107,6 +107,10 @@ function AddProductForm() {
       });
       toast.success("Your timepiece has been added to your catalog.");
     } catch (err) {
+      // Shoppers see friendly copy, so the raw Firebase code is logged here
+      // instead. Open DevTools → Console to read it (e.g. "permission-denied").
+      console.error("[Otach] Failed to save timepiece:", err?.code, err);
+
       const message = getFirestoreErrorMessage(err);
       setSubmissionStatus({
         type: "error",
