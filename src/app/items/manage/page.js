@@ -1,36 +1,75 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { products } from "@/lib/products";
+import { toast } from "@heroui/react";
+import RequireAuth from "@/components/RequireAuth";
+import { useAuth } from "@/context/AuthContext";
+import { deleteOwnedItem, getOwnedItems } from "@/lib/items";
+import { getFirestoreErrorMessage } from "@/lib/auth-errors";
 
-export default function ManageProductsPage() {
-  const [productList, setProductList] = useState(products);
+function ManageItemImage({ src, alt }) {
+  const isRemote = typeof src === "string" && /^https?:\/\//.test(src);
+
+  if (isRemote) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={src} alt={alt} className="absolute inset-0 h-full w-full object-cover" />
+    );
+  }
+
+  return <Image src={src} alt={alt} fill className="object-cover" sizes="56px" />;
+}
+
+function ManageProductsContent() {
+  const { user } = useAuth();
+  const [productList, setProductList] = useState([]);
   const [notification, setNotification] = useState(null);
   const [deleteCandidate, setDeleteCandidate] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loadState, setLoadState] = useState("loading");
+  const [loadError, setLoadError] = useState("");
 
-  const handleDelete = (id, name) => {
-    // ─────────────────────────────────────────────────────────────
-    // FIRESTORE DELETE INTEGRATION POINT:
-    // Replace this local state mutation with your Firestore delete call:
-    //
-    // import { doc, deleteDoc } from "firebase/firestore";
-    // import { db } from "@/lib/firebase";
-    //
-    // await deleteDoc(doc(db, "products", id));
-    // ─────────────────────────────────────────────────────────────
+  const loadItems = useCallback(async () => {
+    if (!user?.uid) return;
 
-    setProductList((prev) => prev.filter((p) => p.id !== id));
-    setDeleteCandidate(null);
-    setNotification(
-      `"${name}" removed from temporary session state. Because no database is connected yet, this deletion is not permanent.`
-    );
-  };
+    setLoadState("loading");
+    setLoadError("");
 
-  const handleResetCatalog = () => {
-    setProductList(products);
-    setNotification("Demo catalog restored to initial static dataset.");
+    try {
+      const items = await getOwnedItems(user.uid);
+      setProductList(items);
+      setLoadState("ready");
+    } catch (err) {
+      setLoadError(getFirestoreErrorMessage(err));
+      setLoadState("error");
+    }
+  }, [user?.uid]);
+
+  useEffect(() => {
+    loadItems();
+  }, [loadItems]);
+
+  const handleDelete = async (id, name) => {
+    if (!user?.uid || isDeleting) return;
+
+    setIsDeleting(true);
+
+    try {
+      await deleteOwnedItem(id, user.uid);
+      setProductList((prev) => prev.filter((p) => p.id !== id));
+      setDeleteCandidate(null);
+      const message = `"${name}" has been removed from your catalog.`;
+      setNotification(message);
+      toast.success(message);
+    } catch (err) {
+      const message = getFirestoreErrorMessage(err);
+      setNotification(message);
+      toast.danger(message);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -72,7 +111,6 @@ export default function ManageProductsPage() {
       </div>
 
       <div className="container-otach pt-8 sm:pt-10">
-        {/* Temporary State Notification */}
         {notification && (
           <div
             className="p-4 rounded-2xl bg-[var(--otach-teal-pale)] border border-[var(--otach-teal)]/30 text-xs text-[var(--otach-teal-dark)] flex items-center justify-between gap-3 mb-6 animate-fade-in"
@@ -93,7 +131,6 @@ export default function ManageProductsPage() {
           </div>
         )}
 
-        {/* Database Notice Header Card */}
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[var(--border-light)] mb-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-[var(--surface-gray-100)] flex items-center justify-center text-[var(--text-secondary)]">
@@ -105,41 +142,42 @@ export default function ManageProductsPage() {
             </div>
             <div>
               <p className="text-xs font-bold text-[var(--text-primary)]">
-                Firestore Integration Standby
+                Your Catalog
               </p>
               <p className="text-xs text-[var(--text-secondary)]">
-                Viewing static dataset ({productList.length} items). Deletions update temporary local UI state.
+                {loadState === "loading"
+                  ? "Loading your timepieces…"
+                  : `Showing ${productList.length} timepiece${productList.length === 1 ? "" : "s"} you own.`}
               </p>
             </div>
           </div>
-
-          {productList.length < products.length && (
-            <button
-              type="button"
-              onClick={handleResetCatalog}
-              className="text-xs font-bold text-[var(--otach-teal)] hover:underline whitespace-nowrap self-end sm:self-auto"
-            >
-              Reset Demo Dataset
-            </button>
-          )}
         </div>
 
-        {/* ── Table Container (Desktop) / Cards (Mobile) ── */}
-        {productList.length === 0 ? (
+        {loadState === "loading" ? (
+          <div className="card-otach p-12 text-center bg-white shadow-xs">
+            <p className="text-sm text-[var(--text-muted)]">Loading your timepieces…</p>
+          </div>
+        ) : loadState === "error" ? (
           <div className="card-otach p-12 text-center bg-white shadow-xs">
             <p className="text-sm font-bold text-[var(--text-primary)] mb-2">
-              All items removed from temporary view
+              Unable to load your catalog
+            </p>
+            <p className="text-xs text-[var(--text-secondary)] mb-6">{loadError}</p>
+            <button type="button" onClick={loadItems} className="btn-primary btn-sm">
+              Try Again
+            </button>
+          </div>
+        ) : productList.length === 0 ? (
+          <div className="card-otach p-12 text-center bg-white shadow-xs">
+            <p className="text-sm font-bold text-[var(--text-primary)] mb-2">
+              No timepieces in your catalog yet
             </p>
             <p className="text-xs text-[var(--text-secondary)] mb-6">
-              Because no database is connected, no permanent deletion occurred.
+              Add a timepiece to start managing your collection.
             </p>
-            <button
-              type="button"
-              onClick={handleResetCatalog}
-              className="btn-primary btn-sm"
-            >
-              Restore Product List
-            </button>
+            <Link href="/items/add" className="btn-primary btn-sm">
+              Add New Timepiece
+            </Link>
           </div>
         ) : (
           <div className="card-otach overflow-hidden bg-white shadow-[var(--shadow-xs)] border border-[var(--border-light)]">
@@ -161,17 +199,10 @@ export default function ManageProductsPage() {
                       key={product.id}
                       className="hover:bg-[var(--surface-gray-50)] transition-colors group"
                     >
-                      {/* Product Thumbnail & Name */}
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3.5">
                           <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[var(--surface-gray-100)] border border-[var(--border-light)] shrink-0">
-                            <Image
-                              src={product.image}
-                              alt={product.name}
-                              fill
-                              className="object-cover"
-                              sizes="48px"
-                            />
+                            <ManageItemImage src={product.image} alt={product.name} />
                           </div>
                           <div>
                             <Link
@@ -187,19 +218,16 @@ export default function ManageProductsPage() {
                         </div>
                       </td>
 
-                      {/* Category Badge */}
                       <td className="py-4 px-6 whitespace-nowrap">
                         <span className="badge-otach badge-gray capitalize text-[10px]">
                           {product.category}
                         </span>
                       </td>
 
-                      {/* Price */}
                       <td className="py-4 px-6 whitespace-nowrap font-bold text-[var(--text-primary)]">
                         ${product.price.toFixed(2)}
                       </td>
 
-                      {/* Availability */}
                       <td className="py-4 px-6 whitespace-nowrap">
                         <span className="text-xs text-emerald-600 font-medium flex items-center gap-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -207,7 +235,6 @@ export default function ManageProductsPage() {
                         </span>
                       </td>
 
-                      {/* Actions */}
                       <td className="py-4 px-6 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-2">
                           <Link
@@ -222,7 +249,7 @@ export default function ManageProductsPage() {
                             type="button"
                             onClick={() => setDeleteCandidate(product)}
                             className="btn-ghost btn-sm !py-1.5 !px-3 !text-xs !text-red-600 hover:!bg-red-50"
-                            aria-label={`Delete ${product.name} from temporary view`}
+                            aria-label={`Delete ${product.name}`}
                           >
                             Delete
                           </button>
@@ -240,13 +267,7 @@ export default function ManageProductsPage() {
                 <div key={product.id} className="p-4 flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-[var(--surface-gray-100)] border border-[var(--border-light)] shrink-0">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                        sizes="56px"
-                      />
+                      <ManageItemImage src={product.image} alt={product.name} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
@@ -288,7 +309,6 @@ export default function ManageProductsPage() {
         )}
       </div>
 
-      {/* ── Confirm Deletion Modal ── */}
       {deleteCandidate && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
@@ -303,11 +323,11 @@ export default function ManageProductsPage() {
               </svg>
             </div>
             <h3 id="modal-title" className="text-lg font-bold text-[var(--text-primary)] mb-2">
-              Remove Timepiece from View?
+              Remove Timepiece?
             </h3>
             <p className="text-xs text-[var(--text-secondary)] leading-relaxed mb-6">
-              You are removing <strong>&quot;{deleteCandidate.name}&quot;</strong> from this session view.
-              Because no database is connected yet, this operation modifies local UI state only and will not permanently affect Firestore.
+              You are permanently removing <strong>&quot;{deleteCandidate.name}&quot;</strong> from your catalog.
+              This cannot be undone.
             </p>
 
             <div className="flex items-center justify-end gap-3">
@@ -315,20 +335,30 @@ export default function ManageProductsPage() {
                 type="button"
                 onClick={() => setDeleteCandidate(null)}
                 className="btn-ghost btn-sm"
+                disabled={isDeleting}
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => handleDelete(deleteCandidate.id, deleteCandidate.name)}
-                className="px-4 py-2 rounded-full bg-red-600 text-white font-semibold text-xs hover:bg-red-700 transition"
+                disabled={isDeleting}
+                className="px-4 py-2 rounded-full bg-red-600 text-white font-semibold text-xs hover:bg-red-700 transition disabled:opacity-60"
               >
-                Confirm Removal
+                {isDeleting ? "Removing…" : "Confirm Removal"}
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+export default function ManageProductsPage() {
+  return (
+    <RequireAuth>
+      <ManageProductsContent />
+    </RequireAuth>
   );
 }

@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button } from "@heroui/react";
+import { Button, toast } from "@heroui/react";
+import RequireAuth from "@/components/RequireAuth";
+import { useAuth } from "@/context/AuthContext";
+import { createItem } from "@/lib/items";
+import { getFirestoreErrorMessage } from "@/lib/auth-errors";
 
 const CATEGORY_OPTIONS = [
   { value: "analog", label: "Mechanical & Analog" },
@@ -10,7 +14,8 @@ const CATEGORY_OPTIONS = [
   { value: "sport", label: "Chronograph & Sport" },
 ];
 
-export default function AddProductPage() {
+function AddProductForm() {
+  const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [shortDesc, setShortDesc] = useState("");
   const [fullDesc, setFullDesc] = useState("");
@@ -79,45 +84,41 @@ export default function AddProductPage() {
     setIsSubmitting(true);
 
     try {
-      // ─────────────────────────────────────────────────────────────
-      // FIRESTORE PERSISTENCE INTEGRATION POINT:
-      // Replace this block with your Firestore collection call:
-      //
-      // import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-      // import { db } from "@/lib/firebase";
-      //
-      // const docRef = await addDoc(collection(db, "products"), {
-      //   name: title.trim(),
-      //   tagline: shortDesc.trim(),
-      //   description: fullDesc.trim(),
-      //   price: parseFloat(price),
-      //   category: category,
-      //   image: imageUrl.trim() || "/images/watch-classic.jpg",
-      //   createdAt: serverTimestamp(),
-      // });
-      // ─────────────────────────────────────────────────────────────
+      if (!user?.uid) {
+        throw new Error("You must be signed in to add a timepiece.");
+      }
 
-      // Simulating validation / UI cycle without claiming database persistence
-      await new Promise((resolve) => setTimeout(resolve, 700));
+      await createItem({
+        userId: user.uid,
+        title,
+        shortDescription: shortDesc,
+        description: fullDesc,
+        price,
+        category,
+        imageUrl,
+      });
 
+      resetFields();
       setSubmissionStatus({
         type: "success",
-        title: "Validation Passed — Ready for Firestore",
-        message:
-          "Form data is valid and structured for persistence. No database is currently connected, so this item has not been saved permanently.",
+        title: "Timepiece Saved",
+        message: "Your timepiece has been added to your catalog.",
       });
+      toast.success("Timepiece saved to your catalog.");
     } catch (err) {
+      const message = getFirestoreErrorMessage(err);
       setSubmissionStatus({
         type: "error",
         title: "Submission Error",
-        message: err.message || "An unexpected error occurred during form submission.",
+        message,
       });
+      toast.danger(message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleResetForm = () => {
+  const resetFields = () => {
     setTitle("");
     setShortDesc("");
     setFullDesc("");
@@ -125,6 +126,10 @@ export default function AddProductPage() {
     setCategory("analog");
     setImageUrl("");
     setErrors({});
+  };
+
+  const handleResetForm = () => {
+    resetFields();
     setSubmissionStatus(null);
   };
 
@@ -227,7 +232,7 @@ export default function AddProductPage() {
               Timepiece Information
             </h2>
             <p className="text-xs text-[var(--text-secondary)] mt-1">
-              Provide authentic specifications for the timepiece. Form submission is configured ready for Firestore.
+              Provide authentic specifications for the timepiece. It will be saved to your Otach catalog.
             </p>
           </div>
 
@@ -452,10 +457,10 @@ export default function AddProductPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                       </svg>
-                      <span>Validating Form…</span>
+                      <span>Saving Timepiece…</span>
                     </span>
                   ) : (
-                    "Add Product (Ready for Firestore)"
+                    "Add Product"
                   )}
                 </Button>
               </div>
@@ -464,5 +469,13 @@ export default function AddProductPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AddProductPage() {
+  return (
+    <RequireAuth>
+      <AddProductForm />
+    </RequireAuth>
   );
 }

@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidItem() {
+      let data = request.resource.data;
+      return data.keys().hasOnly([
+          'title',
+          'shortDescription',
+          'description',
+          'price',
+          'category',
+          'imageUrl',
+          'userId',
+          'createdAt'
+        ])
+        && data.title is string
+        && data.title.size() >= 3
+        && data.title.size() <= 200
+        && data.shortDescription is string
+        && data.shortDescription.size() >= 5
+        && data.shortDescription.size() <= 500
+        && data.description is string
+        && data.description.size() >= 20
+        && data.description.size() <= 5000
+        && data.price is number
+        && data.price > 0
+        && data.category is string
+        && data.category in ['analog', 'smartwatch', 'sport']
+        && data.imageUrl is string
+        && data.imageUrl.size() <= 2000
+        && data.userId is string
+        && data.createdAt is timestamp;
+    }
+
+    match /items/{itemId} {
+      allow read: if isOwner(resource.data.userId);
+
+      allow create: if isSignedIn()
+        && request.auth.uid == request.resource.data.userId
+        && isValidItem();
+
+      allow update: if isOwner(resource.data.userId)
+        && request.auth.uid == request.resource.data.userId
+        && isValidItem();
+
+      allow delete: if isOwner(resource.data.userId);
+    }
+  }
+}

@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 const shopCategories = [
   { href: "/items", label: "All Timepieces", badge: "Collection" },
@@ -15,12 +16,16 @@ const shopCategories = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, loading: authLoading, logout } = useAuth();
   const [prevPathname, setPrevPathname] = useState(pathname);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [mobileShopOpen, setMobileShopOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   /* Close menus on route change during render */
   if (prevPathname !== pathname) {
@@ -28,10 +33,13 @@ export default function Navbar() {
     setMobileOpen(false);
     setShopDropdownOpen(false);
     setCartOpen(false);
+    setAccountOpen(false);
   }
 
   const dropdownRef = useRef(null);
   const cartRef = useRef(null);
+  const accountRef = useRef(null);
+  const accountLabel = user?.displayName?.trim() || user?.email || "Account";
 
   /* Elevation and surface shadow on scroll */
   useEffect(() => {
@@ -49,6 +57,9 @@ export default function Navbar() {
       if (cartRef.current && !cartRef.current.contains(event.target)) {
         setCartOpen(false);
       }
+      if (accountRef.current && !accountRef.current.contains(event.target)) {
+        setAccountOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -60,6 +71,7 @@ export default function Navbar() {
       if (event.key === "Escape") {
         setShopDropdownOpen(false);
         setCartOpen(false);
+        setAccountOpen(false);
         setMobileOpen(false);
       }
     };
@@ -78,6 +90,18 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+      setAccountOpen(false);
+      setMobileOpen(false);
+      router.push("/");
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 transition-all duration-300 mt-4 mb-2">
@@ -261,28 +285,91 @@ export default function Navbar() {
 
           {/* ── Right Actions: Account, Cart (0), and Mobile Menu Toggle ── */}
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* Account -> /login */}
-            <Link
-              href="/login"
-              className="hidden md:flex items-center gap-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--otach-teal)] transition-colors duration-200 px-3 py-1.5 rounded-full hover:bg-[var(--surface-gray-50)]"
-              aria-label="Account sign in"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
+            {/* Account */}
+            {!authLoading && user ? (
+              <div ref={accountRef} className="relative hidden md:block">
+                <button
+                  type="button"
+                  onClick={() => setAccountOpen((prev) => !prev)}
+                  className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--otach-teal)] transition-colors duration-200 px-3 py-1.5 rounded-full hover:bg-[var(--surface-gray-50)]"
+                  aria-haspopup="menu"
+                  aria-expanded={accountOpen}
+                  aria-label="Account menu"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                  </svg>
+                  <span className="max-w-[9rem] truncate">{accountLabel}</span>
+                </button>
+                {accountOpen && (
+                  <div
+                    role="menu"
+                    aria-label="Account menu"
+                    className="absolute right-0 top-full mt-2 w-56 bg-white border border-[var(--border-light)] rounded-2xl shadow-[var(--shadow-lg)] p-2 z-50 animate-fade-in"
+                  >
+                    <p className="px-3 py-2 text-xs text-[var(--text-muted)] truncate">
+                      {user.email}
+                    </p>
+                    <Link
+                      href="/items/add"
+                      role="menuitem"
+                      className="block px-3 py-2 rounded-xl text-sm text-[var(--text-primary)] hover:bg-[var(--surface-gray-50)] hover:text-[var(--otach-teal)]"
+                    >
+                      Add Timepiece
+                    </Link>
+                    <Link
+                      href="/items/manage"
+                      role="menuitem"
+                      className="block px-3 py-2 rounded-xl text-sm text-[var(--text-primary)] hover:bg-[var(--surface-gray-50)] hover:text-[var(--otach-teal)]"
+                    >
+                      Manage Products
+                    </Link>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      className="w-full text-left px-3 py-2 rounded-xl text-sm text-red-600 hover:bg-red-50 disabled:opacity-60"
+                    >
+                      {isLoggingOut ? "Signing out…" : "Sign Out"}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="hidden md:flex items-center gap-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--otach-teal)] transition-colors duration-200 px-3 py-1.5 rounded-full hover:bg-[var(--surface-gray-50)]"
+                aria-label="Account sign in"
               >
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-              </svg>
-              <span>Account</span>
-            </Link>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                </svg>
+                <span>Account</span>
+              </Link>
+            )}
 
             {/* Cart (0) -> UI placeholder */}
             <div ref={cartRef} className="relative">
@@ -512,12 +599,32 @@ export default function Navbar() {
 
             {/* Mobile Footer Actions */}
             <div className="mt-6 pt-5 border-t border-[var(--border-light)] flex flex-col gap-3">
-              <Link
-                href="/login"
-                className="btn-outline justify-center !w-full"
-              >
-                Sign In / Account
-              </Link>
+              {!authLoading && user ? (
+                <>
+                  <p className="text-xs text-[var(--text-muted)] px-1 truncate">{accountLabel}</p>
+                  <Link href="/items/add" className="btn-outline justify-center !w-full">
+                    Add Timepiece
+                  </Link>
+                  <Link href="/items/manage" className="btn-outline justify-center !w-full">
+                    Manage Products
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
+                    className="btn-ghost justify-center !w-full !text-red-600"
+                  >
+                    {isLoggingOut ? "Signing out…" : "Sign Out"}
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="btn-outline justify-center !w-full"
+                >
+                  Sign In / Account
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={() => {

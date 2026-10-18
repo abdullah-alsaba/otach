@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
+import { getAuthErrorMessage } from "@/lib/auth-errors";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,6 +24,12 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [infoMessage, setInfoMessage] = useState("");
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace("/");
+    }
+  }, [authLoading, user, router]);
 
   const validate = () => {
     const errs = {};
@@ -61,25 +74,12 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      // ─────────────────────────────────────────────────────────────
-      // FIREBASE REGISTRATION INTEGRATION POINT:
-      // Replace this block with your Firebase authentication method:
-      //
-      // import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-      // import { auth } from "@/lib/firebase";
-      //
-      // const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      // await updateProfile(userCredential.user, { displayName: name });
-      // ─────────────────────────────────────────────────────────────
-
-      // Simulating response to verify UI loading state
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      setInfoMessage(
-        "Form validation successful. Firebase registration integration is ready to be connected."
-      );
+      const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      await updateProfile(userCredential.user, { displayName: name.trim() });
+      setInfoMessage("Account created. Redirecting…");
+      router.replace("/");
     } catch (err) {
-      setErrors({ form: err.message || "An unexpected error occurred during account creation." });
+      setErrors({ form: getAuthErrorMessage(err) });
     } finally {
       setIsLoading(false);
     }

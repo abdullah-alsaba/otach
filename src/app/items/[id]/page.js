@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { products, getProductById } from "@/lib/products";
 import ProductDetail from "@/components/ProductDetail";
+import OwnedItemDetail from "@/components/OwnedItemDetail";
 
 export function generateStaticParams() {
   return products.map((p) => ({ id: p.id }));
@@ -34,7 +35,7 @@ export default async function ProductDetailPage({ params }) {
   const product = getProductById(id);
 
   if (!product) {
-    notFound();
+    return <OwnedItemDetail id={id} />;
   }
 
   // Related products: same category prioritized, excluding current product

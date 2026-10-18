@@ -1,11 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@heroui/react";
+import {
+  browserLocalPersistence,
+  browserSessionPersistence,
+  sendPasswordResetEmail,
+  setPersistence,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
+import { getAuthErrorMessage, isSafeInternalPath } from "@/lib/auth-errors";
 
-export default function LoginPage() {
+function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -14,6 +28,14 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [infoMessage, setInfoMessage] = useState("");
+
+  const nextPath = isSafeInternalPath(searchParams.get("next")) ? searchParams.get("next") : "/";
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace(nextPath || "/");
+    }
+  }, [authLoading, user, router, nextPath]);
 
   const validate = () => {
     const errs = {};
@@ -44,27 +66,33 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // ─────────────────────────────────────────────────────────────
-      // FIREBASE AUTHENTICATION INTEGRATION POINT:
-      // Replace this block with your Firebase authentication method:
-      //
-      // import { signInWithEmailAndPassword } from "firebase/auth";
-      // import { auth } from "@/lib/firebase";
-      //
-      // const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // const user = userCredential.user;
-      // ─────────────────────────────────────────────────────────────
-
-      // Simulating network response to verify UI loading & submission state
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      setInfoMessage(
-        "Form validation successful. Firebase authentication integration is ready to be connected."
+      await setPersistence(
+        auth,
+        rememberMe ? browserLocalPersistence : browserSessionPersistence
       );
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+      router.replace(nextPath || "/");
     } catch (err) {
-      setErrors({ form: err.message || "An unexpected error occurred during sign in." });
+      setErrors({ form: getAuthErrorMessage(err) });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setInfoMessage("");
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setErrors({ email: "Enter your email address to receive a reset link." });
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, trimmedEmail);
+      setInfoMessage("If an account exists for this email, a password reset link has been sent.");
+    } catch (err) {
+      setErrors({ form: getAuthErrorMessage(err) });
     }
   };
 
@@ -197,7 +225,7 @@ export default function LoginPage() {
                 </label>
                 <button
                   type="button"
-                  onClick={() => alert("Password recovery placeholder ready for Firebase integration.")}
+                  onClick={handleForgotPassword}
                   className="text-xs text-[var(--otach-teal)] hover:underline focus:outline-none"
                 >
                   Forgot password?
@@ -300,5 +328,19 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container-otach min-h-[50vh] flex items-center justify-center py-20">
+          <p className="text-sm text-[var(--text-muted)]">Loading sign in…</p>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { RouterProvider, ToastProvider } from "@heroui/react";
+import { AuthProvider } from "@/context/AuthContext";
 
 export function Providers({ children }) {
   const router = useRouter();
@@ -9,7 +10,7 @@ export function Providers({ children }) {
   return (
     <RouterProvider navigate={router.push}>
       <ToastProvider placement="top-right" />
-      {children}
+      <AuthProvider>{children}</AuthProvider>
     </RouterProvider>
   );
 }
