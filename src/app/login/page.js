@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@heroui/react";
+import { Button, toast } from "@heroui/react";
 import {
   browserLocalPersistence,
   browserSessionPersistence,
@@ -60,6 +60,7 @@ function LoginForm() {
     setInfoMessage("");
 
     if (!validate()) {
+      toast.warning("Please fix the highlighted fields and try again.");
       return;
     }
 
@@ -71,9 +72,12 @@ function LoginForm() {
         rememberMe ? browserLocalPersistence : browserSessionPersistence
       );
       await signInWithEmailAndPassword(auth, email.trim(), password);
+      toast.success("Signed in successfully. Welcome back to Otach.");
       router.replace(nextPath || "/");
     } catch (err) {
-      setErrors({ form: getAuthErrorMessage(err) });
+      const message = getAuthErrorMessage(err);
+      setErrors({ form: message });
+      toast.danger(message);
     } finally {
       setIsLoading(false);
     }
@@ -85,14 +89,18 @@ function LoginForm() {
 
     if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
       setErrors({ email: "Enter your email address to receive a reset link." });
+      toast.warning("Enter a valid email address to receive a reset link.");
       return;
     }
 
     try {
       await sendPasswordResetEmail(auth, trimmedEmail);
       setInfoMessage("If an account exists for this email, a password reset link has been sent.");
+      toast.success("Password reset email sent.");
     } catch (err) {
-      setErrors({ form: getAuthErrorMessage(err) });
+      const message = getAuthErrorMessage(err);
+      setErrors({ form: message });
+      toast.danger(message);
     }
   };
 

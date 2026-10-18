@@ -42,8 +42,10 @@ function ManageProductsContent() {
       setProductList(items);
       setLoadState("ready");
     } catch (err) {
-      setLoadError(getFirestoreErrorMessage(err));
+      const message = getFirestoreErrorMessage(err);
+      setLoadError(message);
       setLoadState("error");
+      toast.danger(message);
     }
   }, [user?.uid]);
 

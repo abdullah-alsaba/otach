@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Button } from "@heroui/react";
+import { Button, toast } from "@heroui/react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
@@ -68,6 +68,7 @@ export default function RegisterPage() {
     setInfoMessage("");
 
     if (!validate()) {
+      toast.warning("Please fix the highlighted fields and try again.");
       return;
     }
 
@@ -77,9 +78,12 @@ export default function RegisterPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
       await updateProfile(userCredential.user, { displayName: name.trim() });
       setInfoMessage("Account created. Redirecting…");
+      toast.success("Your Otach account has been created.");
       router.replace("/");
     } catch (err) {
-      setErrors({ form: getAuthErrorMessage(err) });
+      const message = getAuthErrorMessage(err);
+      setErrors({ form: message });
+      toast.danger(message);
     } finally {
       setIsLoading(false);
     }

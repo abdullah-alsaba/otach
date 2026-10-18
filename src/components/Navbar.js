@@ -4,7 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "@heroui/react";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
+import { formatPrice } from "@/lib/cart";
 
 const shopCategories = [
   { href: "/items", label: "All Timepieces", badge: "Collection" },
@@ -18,6 +21,15 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading: authLoading, logout } = useAuth();
+  const {
+    items: cartItems,
+    itemCount,
+    subtotal,
+    maxQuantityPerItem,
+    increaseQuantity,
+    decreaseQuantity,
+    removeItem,
+  } = useCart();
   const [prevPathname, setPrevPathname] = useState(pathname);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -95,12 +107,40 @@ export default function Navbar() {
     setIsLoggingOut(true);
     try {
       await logout();
+      toast.success("You have been signed out.");
       setAccountOpen(false);
       setMobileOpen(false);
       router.push("/");
+    } catch {
+      toast.danger("We could not sign you out. Please try again.");
     } finally {
       setIsLoggingOut(false);
     }
+  };
+
+  const closeCart = () => setCartOpen(false);
+
+  const handleIncreaseQuantity = (item) => {
+    if (item.quantity >= maxQuantityPerItem) {
+      toast.warning(`You can order up to ${maxQuantityPerItem} of the ${item.title}.`);
+      return;
+    }
+
+    increaseQuantity(item.id);
+  };
+
+  const handleDecreaseQuantity = (item) => {
+    if (item.quantity <= 1) {
+      handleRemoveItem(item);
+      return;
+    }
+
+    decreaseQuantity(item.id);
+  };
+
+  const handleRemoveItem = (item) => {
+    removeItem(item.id);
+    toast.success(`Removed ${item.title} from your bag.`);
   };
 
   return (
@@ -283,7 +323,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* ── Right Actions: Account, Cart (0), and Mobile Menu Toggle ── */}
+          {/* ── Right Actions: Account, Cart, and Mobile Menu Toggle ── */}
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Account */}
             {!authLoading && user ? (
@@ -371,7 +411,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {/* Cart (0) -> UI placeholder */}
+            {/* Cart */}
             <div ref={cartRef} className="relative">
               <button
                 type="button"
@@ -379,7 +419,7 @@ export default function Navbar() {
                 className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--otach-teal)] transition-colors duration-200 px-3 py-1.5 rounded-full hover:bg-[var(--surface-gray-50)]"
                 aria-haspopup="dialog"
                 aria-expanded={cartOpen}
-                aria-label="View shopping cart, currently 0 items"
+                aria-label={`View shopping bag, currently ${itemCount} ${itemCount === 1 ? "item" : "items"}`}
               >
                 <svg
                   width="18"
@@ -396,15 +436,17 @@ export default function Navbar() {
                   <line x1="3" x2="21" y1="6" y2="6" />
                   <path d="M16 10a4 4 0 0 1-8 0" />
                 </svg>
-                <span className="font-semibold text-xs sm:text-sm">Cart (0)</span>
+                <span className="font-semibold text-xs sm:text-sm" aria-live="polite">
+                  Cart ({itemCount})
+                </span>
               </button>
 
-              {/* Cart UI Placeholder Popover */}
+              {/* Cart Popover */}
               {cartOpen && (
                 <div
                   role="dialog"
-                  aria-label="Shopping Cart preview"
-                  className="absolute right-0 top-full mt-2 w-80 bg-white border border-[var(--border-light)] rounded-2xl shadow-[var(--shadow-lg)] p-5 z-50 animate-fade-in"
+                  aria-label="Shopping bag preview"
+                  className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-80 bg-white border border-[var(--border-light)] rounded-2xl shadow-[var(--shadow-lg)] p-5 z-50 animate-fade-in"
                 >
                   <div className="flex items-center justify-between pb-3 border-b border-[var(--border-light)] mb-4">
                     <h3 className="font-semibold text-sm text-[var(--text-primary)]">
@@ -412,43 +454,144 @@ export default function Navbar() {
                     </h3>
                     <button
                       type="button"
-                      onClick={() => setCartOpen(false)}
+                      onClick={closeCart}
                       aria-label="Close cart popup"
                       className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1"
                     >
                       ✕
                     </button>
                   </div>
-                  <div className="py-6 text-center">
-                    <div className="w-12 h-12 rounded-full bg-[var(--surface-gray-100)] flex items-center justify-center mx-auto mb-3 text-[var(--text-muted)]">
-                      <svg
-                        width="22"
-                        height="22"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+
+                  {cartItems.length === 0 ? (
+                    <div className="py-6 text-center">
+                      <div className="w-12 h-12 rounded-full bg-[var(--surface-gray-100)] flex items-center justify-center mx-auto mb-3 text-[var(--text-muted)]">
+                        <svg
+                          width="22"
+                          height="22"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                          <line x1="3" x2="21" y1="6" y2="6" />
+                        </svg>
+                      </div>
+                      <p className="text-sm font-medium text-[var(--text-primary)] mb-1">
+                        Your cart is empty
+                      </p>
+                      <p className="text-xs text-[var(--text-muted)] mb-5">
+                        Explore our curated horological timepieces and fine accessories.
+                      </p>
+                      <Link
+                        href="/items"
+                        onClick={closeCart}
+                        className="btn-primary btn-sm !w-full justify-center"
                       >
-                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-                        <line x1="3" x2="21" y1="6" y2="6" />
-                      </svg>
+                        Browse Timepieces
+                      </Link>
                     </div>
-                    <p className="text-sm font-medium text-[var(--text-primary)] mb-1">
-                      Your cart is empty
-                    </p>
-                    <p className="text-xs text-[var(--text-muted)] mb-5">
-                      Explore our curated horological timepieces and fine accessories.
-                    </p>
-                    <Link
-                      href="/items"
-                      onClick={() => setCartOpen(false)}
-                      className="btn-primary btn-sm !w-full justify-center"
-                    >
-                      Browse Timepieces
-                    </Link>
-                  </div>
+                  ) : (
+                    <>
+                      <ul className="max-h-72 overflow-y-auto space-y-3 pr-1">
+                        {cartItems.map((item) => (
+                          <li key={item.id} className="flex items-start gap-3">
+                            <Link
+                              href={`/items/${item.id}`}
+                              onClick={closeCart}
+                              className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden border border-[var(--border-light)] bg-[var(--surface-gray-50)]"
+                              aria-label={`View ${item.title}`}
+                            >
+                              <Image
+                                src={item.image || "/images/watch-classic.jpg"}
+                                alt={item.title}
+                                fill
+                                className="object-cover"
+                                sizes="56px"
+                              />
+                            </Link>
+
+                            <div className="flex-1 min-w-0">
+                              <Link
+                                href={`/items/${item.id}`}
+                                onClick={closeCart}
+                                className="block text-xs font-semibold text-[var(--text-primary)] truncate hover:text-[var(--otach-teal)] transition-colors"
+                              >
+                                {item.title}
+                              </Link>
+                              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                                {formatPrice(item.price)} each
+                              </p>
+                              <div className="flex items-center justify-between gap-2 mt-2">
+                                <div className="inline-flex items-center border border-[var(--border-light)] rounded-full overflow-hidden">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDecreaseQuantity(item)}
+                                    aria-label={`Decrease quantity of ${item.title}`}
+                                    className="w-7 h-7 flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--surface-gray-50)] transition-colors"
+                                  >
+                                    −
+                                  </button>
+                                  <span className="w-7 text-center text-xs font-bold text-[var(--text-primary)]">
+                                    {item.quantity}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleIncreaseQuantity(item)}
+                                    disabled={item.quantity >= maxQuantityPerItem}
+                                    aria-label={`Increase quantity of ${item.title}`}
+                                    className="w-7 h-7 flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--surface-gray-50)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveItem(item)}
+                                  className="text-xs font-semibold text-red-600 hover:underline focus:outline-none"
+                                  aria-label={`Remove ${item.title} from bag`}
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </div>
+
+                            <span className="text-xs font-bold text-[var(--text-primary)] shrink-0">
+                              {formatPrice(item.price * item.quantity)}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="mt-4 pt-3 border-t border-[var(--border-light)] flex items-center justify-between">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                          Subtotal
+                        </span>
+                        <span className="text-sm font-extrabold text-[var(--text-primary)]">
+                          {formatPrice(subtotal)}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-2">
+                        <Link
+                          href="/cart"
+                          onClick={closeCart}
+                          className="btn-outline btn-sm !w-full justify-center"
+                        >
+                          View Bag
+                        </Link>
+                        <Link
+                          href="/checkout"
+                          onClick={closeCart}
+                          className="btn-primary btn-sm !w-full justify-center"
+                        >
+                          Checkout
+                        </Link>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -625,16 +768,13 @@ export default function Navbar() {
                   Sign In / Account
                 </Link>
               )}
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileOpen(false);
-                  setCartOpen(true);
-                }}
+              <Link
+                href="/cart"
+                onClick={() => setMobileOpen(false)}
                 className="btn-primary justify-center !w-full"
               >
-                View Cart (0 items)
-              </button>
+                View Bag ({itemCount} {itemCount === 1 ? "item" : "items"})
+              </Link>
             </div>
           </div>
         </div>

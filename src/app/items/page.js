@@ -26,6 +26,8 @@ const SORT_OPTIONS = [
   { value: "name-asc", label: "Alphabetical: A to Z" },
 ];
 
+const PAGE_SIZE = 9;
+
 function resolveCategory(param) {
   if (!param) return "All";
   const match = CATEGORIES.find(
@@ -50,6 +52,7 @@ function ProductListingContent() {
   const [prevParam, setPrevParam] = useState(initialCategoryParam);
   const [priceRangeIndex, setPriceRangeIndex] = useState(0);
   const [sort, setSort] = useState("featured");
+  const [page, setPage] = useState(1);
 
   /* Reset manual category selection if URL category param changes */
   if (prevParam !== initialCategoryParam) {
@@ -58,7 +61,10 @@ function ProductListingContent() {
   }
 
   const category = userCategory ?? resolveCategory(initialCategoryParam);
-  const setCategory = (val) => setUserCategory(val);
+  const setCategory = (val) => {
+    setUserCategory(val);
+    setPage(1);
+  };
 
   /* Filter and Sort logic */
   const filtered = useMemo(() => {
@@ -107,6 +113,24 @@ function ProductListingContent() {
     return list;
   }, [search, category, priceRangeIndex, sort]);
 
+  /* Pagination slice */
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageItems = useMemo(
+    () => filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [filtered, currentPage]
+  );
+  const firstResultIndex = filtered.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
+  const lastResultIndex = Math.min(currentPage * PAGE_SIZE, filtered.length);
+
+  const goToPage = (nextPage) => {
+    const target = Math.min(Math.max(nextPage, 1), totalPages);
+    setPage(target);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const hasActiveFilters =
     search.trim() !== "" || category !== "All" || priceRangeIndex !== 0 || sort !== "featured";
 
@@ -115,6 +139,7 @@ function ProductListingContent() {
     setUserCategory("All");
     setPriceRangeIndex(0);
     setSort("featured");
+    setPage(1);
   };
 
   return (
@@ -168,14 +193,20 @@ function ProductListingContent() {
                   id="items-search-input"
                   type="search"
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
                   placeholder="Search timepieces by name, collection, or style..."
                   className="w-full h-12 pl-12 pr-10 rounded-xl border border-[var(--border-light)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all"
                 />
                 {search && (
                   <button
                     type="button"
-                    onClick={() => setSearch("")}
+                    onClick={() => {
+                      setSearch("");
+                      setPage(1);
+                    }}
                     aria-label="Clear search input"
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 text-xs font-bold transition-colors"
                   >
@@ -235,7 +266,10 @@ function ProductListingContent() {
                 <select
                   id="items-price-select"
                   value={priceRangeIndex}
-                  onChange={(e) => setPriceRangeIndex(Number(e.target.value))}
+                  onChange={(e) => {
+                    setPriceRangeIndex(Number(e.target.value));
+                    setPage(1);
+                  }}
                   className="w-full h-12 pl-4 pr-10 rounded-xl border border-[var(--border-light)] text-sm text-[var(--text-primary)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all appearance-none cursor-pointer"
                 >
                   {PRICE_RANGES.map((r, i) => (
@@ -273,7 +307,10 @@ function ProductListingContent() {
                 <select
                   id="items-sort-select"
                   value={sort}
-                  onChange={(e) => setSort(e.target.value)}
+                  onChange={(e) => {
+                    setSort(e.target.value);
+                    setPage(1);
+                  }}
                   className="w-full h-12 pl-4 pr-10 rounded-xl border border-[var(--border-light)] text-sm text-[var(--text-primary)] bg-[var(--surface-white)] focus:outline-none focus:border-[var(--otach-teal)] focus:ring-2 focus:ring-[var(--otach-teal)]/15 transition-all appearance-none cursor-pointer"
                 >
                   {SORT_OPTIONS.map(({ value, label }) => (
@@ -327,8 +364,15 @@ function ProductListingContent() {
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8 px-1">
           <div className="flex flex-wrap items-center gap-2.5">
             <p className="text-xs font-medium text-[var(--text-secondary)]">
-              Showing <span className="font-bold text-[var(--text-primary)]">{filtered.length}</span>{" "}
-              of <span className="font-bold text-[var(--text-primary)]">{products.length}</span> timepieces
+              Showing{" "}
+              <span className="font-bold text-[var(--text-primary)]">
+                {firstResultIndex}–{lastResultIndex}
+              </span>{" "}
+              of <span className="font-bold text-[var(--text-primary)]">{filtered.length}</span>{" "}
+              timepieces
+              {filtered.length !== products.length && (
+                <span className="text-[var(--text-muted)]"> · {products.length} in catalog</span>
+              )}
             </p>
 
             {/* Active category chip */}
@@ -352,7 +396,10 @@ function ProductListingContent() {
                 <span>{PRICE_RANGES[priceRangeIndex].label}</span>
                 <button
                   type="button"
-                  onClick={() => setPriceRangeIndex(0)}
+                  onClick={() => {
+                    setPriceRangeIndex(0);
+                    setPage(1);
+                  }}
                   className="hover:text-black font-bold p-0.5 focus:outline-none"
                   aria-label="Remove price filter"
                 >
@@ -367,7 +414,10 @@ function ProductListingContent() {
                 <span>&ldquo;{search.trim()}&rdquo;</span>
                 <button
                   type="button"
-                  onClick={() => setSearch("")}
+                  onClick={() => {
+                    setSearch("");
+                    setPage(1);
+                  }}
                   className="hover:text-black font-bold p-0.5 focus:outline-none"
                   aria-label="Remove search query"
                 >
@@ -438,11 +488,82 @@ function ProductListingContent() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pageItems.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+
+            {/* ── Pagination ── */}
+            {totalPages > 1 && (
+              <nav
+                aria-label="Catalog pagination"
+                className="mt-12 flex flex-wrap items-center justify-center gap-2"
+              >
+                <button
+                  type="button"
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="h-10 px-4 rounded-xl text-xs font-semibold border border-[var(--border-light)] bg-white text-[var(--text-secondary)] hover:border-[var(--otach-teal)] hover:text-[var(--otach-teal)] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[var(--border-light)] disabled:hover:text-[var(--text-secondary)] inline-flex items-center gap-1.5"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                  <span>Previous</span>
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+                  <button
+                    key={pageNumber}
+                    type="button"
+                    onClick={() => goToPage(pageNumber)}
+                    aria-current={pageNumber === currentPage ? "page" : undefined}
+                    aria-label={`Go to page ${pageNumber}`}
+                    className={`min-w-10 h-10 px-3 rounded-xl text-sm font-semibold border transition-all cursor-pointer ${
+                      pageNumber === currentPage
+                        ? "bg-[var(--otach-teal)] text-white border-[var(--otach-teal)] shadow-xs"
+                        : "bg-white text-[var(--text-secondary)] border-[var(--border-light)] hover:border-[var(--otach-teal)] hover:text-[var(--otach-teal)]"
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="h-10 px-4 rounded-xl text-xs font-semibold border border-[var(--border-light)] bg-white text-[var(--text-secondary)] hover:border-[var(--otach-teal)] hover:text-[var(--otach-teal)] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[var(--border-light)] disabled:hover:text-[var(--text-secondary)] inline-flex items-center gap-1.5"
+                >
+                  <span>Next</span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </nav>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -3,15 +3,19 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "@heroui/react";
 import ProductCard from "@/components/ProductCard";
+import { useCart } from "@/context/CartContext";
 
 export default function ProductDetail({ product, relatedProducts = [] }) {
+  const router = useRouter();
+  const { addItem, maxQuantityPerItem } = useCart();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedType, setSelectedType] = useState(product.types?.[0] || "");
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [buyNowMessage, setBuyNowMessage] = useState(false);
 
   const discount = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
@@ -19,14 +23,48 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
 
   const images = product.images && product.images.length > 0 ? product.images : [product.image];
 
+  /* Shared feedback for any add-to-cart attempt, so success is only announced
+     after the cart state actually changed. */
+  const reportAddResult = (result) => {
+    switch (result.status) {
+      case "added":
+        toast.success(`Added ${result.quantity} × ${product.name} to your bag.`);
+        return true;
+      case "merged":
+        toast.success(`${product.name} is in your bag — quantity updated to ${result.totalQuantity}.`);
+        return true;
+      case "limit":
+        toast.warning(
+          `You already have the maximum of ${maxQuantityPerItem} of this timepiece in your bag.`
+        );
+        return false;
+      case "out-of-stock":
+        toast.danger(`${product.name} is currently out of stock.`);
+        return false;
+      default:
+        toast.danger("This timepiece could not be added to your bag. Please try again.");
+        return false;
+    }
+  };
+
   const handleAddToCart = () => {
+    const result = addItem(product, quantity);
+
+    if (!reportAddResult(result)) return;
+
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2500);
   };
 
+  /* "Buy Now" adds the current selection to the shared cart and hands the
+     shopper straight to checkout — there is no instant-purchase backend. */
   const handleBuyNow = () => {
-    setBuyNowMessage(true);
-    setTimeout(() => setBuyNowMessage(false), 3000);
+    const result = addItem(product, quantity);
+
+    if (!reportAddResult(result)) return;
+
+    setAddedToCart(true);
+    router.push("/checkout");
   };
 
   return (
@@ -326,9 +364,10 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                     <button
                       type="button"
                       id="qty-plus"
-                      onClick={() => setQuantity((q) => Math.min(20, q + 1))}
+                      onClick={() => setQuantity((q) => Math.min(maxQuantityPerItem, q + 1))}
+                      disabled={quantity >= maxQuantityPerItem}
                       aria-label="Increase quantity"
-                      className="w-10 h-10 flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--surface-gray-50)] transition-colors"
+                      className="w-10 h-10 flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--surface-gray-50)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
                         <line x1="12" y1="5" x2="12" y2="19" />
@@ -343,7 +382,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
               </div>
             </div>
 
-            {/* ── Action Buttons (Frontend Placeholders) ── */}
+            {/* ── Action Buttons ── */}
             <div className="flex flex-col gap-3 pt-2">
               {/* Add to Cart */}
               <button
@@ -362,7 +401,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                    <span>Added {quantity} to Bag (Demo)</span>
+                    <span>Added to Bag</span>
                   </>
                 ) : (
                   <>
@@ -371,7 +410,7 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                       <line x1="3" x2="21" y1="6" y2="6" />
                       <path d="M16 10a4 4 0 0 1-8 0" />
                     </svg>
-                    <span>Add to Cart (Frontend Placeholder)</span>
+                    <span>Add to Cart</span>
                   </>
                 )}
               </button>
@@ -383,14 +422,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
                 onClick={handleBuyNow}
                 className="w-full btn-primary btn-lg justify-center shadow-[var(--shadow-md)]"
               >
-                Buy Now (Instant Checkout)
+                Buy Now
               </button>
-
-              {buyNowMessage && (
-                <div className="p-3 rounded-xl bg-[var(--otach-teal-pale)] border border-[var(--otach-teal)]/30 text-xs text-[var(--otach-teal-dark)] text-center animate-fade-in">
-                  Instant checkout is a frontend UI demonstration in this preview.
-                </div>
-              )}
             </div>
 
             {/* Shopping Assurance Callouts */}

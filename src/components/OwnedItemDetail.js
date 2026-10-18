@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast } from "@heroui/react";
 import ProductDetail from "@/components/ProductDetail";
 import { useAuth } from "@/context/AuthContext";
 import { getOwnedItem } from "@/lib/items";
+import { getFirestoreErrorMessage } from "@/lib/auth-errors";
 
 export default function OwnedItemDetail({ id }) {
   const { user, loading: authLoading } = useAuth();
@@ -39,10 +41,11 @@ export default function OwnedItemDetail({ id }) {
 
         setItem(nextItem);
         setStatus("ready");
-      } catch {
+      } catch (error) {
         if (!cancelled) {
           setItem(null);
           setStatus("missing");
+          toast.danger(getFirestoreErrorMessage(error));
         }
       }
     }
