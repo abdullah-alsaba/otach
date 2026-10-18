@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { toast } from "@heroui/react";
+import { toast } from "@/lib/notify";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/cart";
@@ -112,7 +112,7 @@ export default function Navbar() {
       setMobileOpen(false);
       router.push("/");
     } catch {
-      toast.danger("We could not sign you out. Please try again.");
+      toast.error("We could not sign you out. Please try again.");
     } finally {
       setIsLoggingOut(false);
     }
@@ -388,27 +388,37 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <Link
-                href="/login"
-                className="hidden md:flex items-center gap-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--otach-teal)] transition-colors duration-200 px-3 py-1.5 rounded-full hover:bg-[var(--surface-gray-50)]"
-                aria-label="Account sign in"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
+              /* Signed out: no account menu, just the two ways in. */
+              <div className="hidden md:flex items-center gap-1">
+                <Link
+                  href="/login"
+                  className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--otach-teal)] transition-colors duration-200 px-3 py-1.5 rounded-full hover:bg-[var(--surface-gray-50)]"
+                  aria-label="Sign in to your Otach account"
                 >
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                </svg>
-                <span>Account</span>
-              </Link>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                  </svg>
+                  <span>Login</span>
+                </Link>
+                <Link
+                  href="/register"
+                  className="text-sm font-semibold text-[var(--otach-teal)] hover:text-[var(--otach-teal-dark)] transition-colors duration-200 px-3 py-1.5 rounded-full hover:bg-[var(--otach-teal-pale)]"
+                  aria-label="Create an Otach account"
+                >
+                  Register
+                </Link>
+              </div>
             )}
 
             {/* Cart */}
@@ -761,12 +771,17 @@ export default function Navbar() {
                   </button>
                 </>
               ) : (
-                <Link
-                  href="/login"
-                  className="btn-outline justify-center !w-full"
-                >
-                  Sign In / Account
-                </Link>
+                <>
+                  <p className="text-xs text-[var(--text-muted)] px-1">
+                    Sign in to build your bag and manage your catalog.
+                  </p>
+                  <Link href="/login" className="btn-primary justify-center !w-full">
+                    Sign In
+                  </Link>
+                  <Link href="/register" className="btn-outline justify-center !w-full">
+                    Create Account
+                  </Link>
+                </>
               )}
               <Link
                 href="/cart"

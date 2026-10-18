@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { toast } from "@heroui/react";
+import { toast } from "@/lib/notify";
+import RequireAuth from "@/components/RequireAuth";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/cart";
@@ -28,7 +29,7 @@ const EMPTY_FORM = {
   country: "",
 };
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const { user } = useAuth();
   const { items, itemCount, subtotal, hydrated } = useCart();
   const [form, setForm] = useState({});
@@ -310,5 +311,15 @@ export default function CheckoutPage() {
         )}
       </div>
     </div>
+  );
+}
+
+/* Checkout is a protected shopping flow: signed-out visitors are sent to sign
+   in (returning here afterwards) before any delivery details are collected. */
+export default function CheckoutPage() {
+  return (
+    <RequireAuth>
+      <CheckoutContent />
+    </RequireAuth>
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { toast } from "@heroui/react";
+import { toast } from "@/lib/notify";
 import RequireAuth from "@/components/RequireAuth";
 import { useAuth } from "@/context/AuthContext";
 import { deleteOwnedItem, getOwnedItems } from "@/lib/items";
@@ -30,28 +30,39 @@ function ManageProductsContent() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [loadState, setLoadState] = useState("loading");
   const [loadError, setLoadError] = useState("");
+  const [reloadToken, setReloadToken] = useState(0);
 
-  const loadItems = useCallback(async () => {
+  /* Loads the signed-in member's own catalog. State is only written from inside
+     the promise callbacks, which keeps the effect free of cascading renders. */
+  useEffect(() => {
     if (!user?.uid) return;
 
+    let ignore = false;
+
+    getOwnedItems(user.uid)
+      .then((items) => {
+        if (ignore) return;
+        setProductList(items);
+        setLoadState("ready");
+      })
+      .catch((err) => {
+        if (ignore) return;
+        const message = getFirestoreErrorMessage(err);
+        setLoadError(message);
+        setLoadState("error");
+        toast.error(message);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [user?.uid, reloadToken]);
+
+  const handleRetry = () => {
     setLoadState("loading");
     setLoadError("");
-
-    try {
-      const items = await getOwnedItems(user.uid);
-      setProductList(items);
-      setLoadState("ready");
-    } catch (err) {
-      const message = getFirestoreErrorMessage(err);
-      setLoadError(message);
-      setLoadState("error");
-      toast.danger(message);
-    }
-  }, [user?.uid]);
-
-  useEffect(() => {
-    loadItems();
-  }, [loadItems]);
+    setReloadToken((token) => token + 1);
+  };
 
   const handleDelete = async (id, name) => {
     if (!user?.uid || isDeleting) return;
@@ -68,7 +79,7 @@ function ManageProductsContent() {
     } catch (err) {
       const message = getFirestoreErrorMessage(err);
       setNotification(message);
-      toast.danger(message);
+      toast.error(message);
     } finally {
       setIsDeleting(false);
     }
@@ -165,7 +176,7 @@ function ManageProductsContent() {
               Unable to load your catalog
             </p>
             <p className="text-xs text-[var(--text-secondary)] mb-6">{loadError}</p>
-            <button type="button" onClick={loadItems} className="btn-primary btn-sm">
+            <button type="button" onClick={handleRetry} className="btn-primary btn-sm">
               Try Again
             </button>
           </div>

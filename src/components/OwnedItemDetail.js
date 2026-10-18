@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { toast } from "@heroui/react";
+import { toast } from "@/lib/notify";
 import ProductDetail from "@/components/ProductDetail";
 import { useAuth } from "@/context/AuthContext";
 import { getOwnedItem } from "@/lib/items";
@@ -45,7 +45,7 @@ export default function OwnedItemDetail({ id }) {
         if (!cancelled) {
           setItem(null);
           setStatus("missing");
-          toast.danger(getFirestoreErrorMessage(error));
+          toast.error(getFirestoreErrorMessage(error));
         }
       }
     }

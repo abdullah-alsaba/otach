@@ -3,13 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "@heroui/react";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "@/lib/notify";
 import ProductCard from "@/components/ProductCard";
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 
 export default function ProductDetail({ product, relatedProducts = [] }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const { user } = useAuth();
   const { addItem, maxQuantityPerItem } = useCart();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
@@ -39,15 +42,29 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
         );
         return false;
       case "out-of-stock":
-        toast.danger(`${product.name} is currently out of stock.`);
+        toast.error(`${product.name} is currently out of stock.`);
         return false;
       default:
-        toast.danger("This timepiece could not be added to your bag. Please try again.");
+        toast.error("This timepiece could not be added to your bag. Please try again.");
         return false;
     }
   };
 
+  /* Shopping actions are members-only. A signed-out shopper is sent to sign in
+     with this product page as the return path, and nothing is added to the bag
+     until the account exists. */
+  const requireSignedIn = () => {
+    if (user) return true;
+
+    const returnPath = pathname || `/items/${product.id}`;
+    toast.info("Please sign in to add timepieces to your bag.");
+    router.push(`/login?next=${encodeURIComponent(returnPath)}`);
+    return false;
+  };
+
   const handleAddToCart = () => {
+    if (!requireSignedIn()) return;
+
     const result = addItem(product, quantity);
 
     if (!reportAddResult(result)) return;
@@ -59,6 +76,8 @@ export default function ProductDetail({ product, relatedProducts = [] }) {
   /* "Buy Now" adds the current selection to the shared cart and hands the
      shopper straight to checkout — there is no instant-purchase backend. */
   const handleBuyNow = () => {
+    if (!requireSignedIn()) return;
+
     const result = addItem(product, quantity);
 
     if (!reportAddResult(result)) return;

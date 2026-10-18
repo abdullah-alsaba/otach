@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { products, getProductById } from "@/lib/products";
 import ProductDetail from "@/components/ProductDetail";
 import OwnedItemDetail from "@/components/OwnedItemDetail";
@@ -30,7 +30,10 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function ProductDetailPage({ params }) {
+/* `params` is URL data, so it may only be read inside a <Suspense> boundary.
+   Reading it here (instead of at the top of the page) keeps the route's static
+   shell URL-independent, so the shell can be shared by every product link. */
+async function ProductDetailRoute({ params }) {
   const { id } = await params;
   const product = getProductById(id);
 
@@ -45,4 +48,18 @@ export default async function ProductDetailPage({ params }) {
     .slice(0, 3);
 
   return <ProductDetail product={product} relatedProducts={relatedProducts} />;
+}
+
+export default function ProductDetailPage({ params }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="container-otach min-h-[60vh] flex items-center justify-center py-20">
+          <p className="text-sm text-[var(--text-muted)]">Loading timepiece…</p>
+        </div>
+      }
+    >
+      <ProductDetailRoute params={params} />
+    </Suspense>
+  );
 }

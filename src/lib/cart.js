@@ -6,6 +6,17 @@
 export const CART_STORAGE_KEY = "otach.cart.v1";
 export const MAX_QUANTITY_PER_ITEM = 20;
 
+/**
+ * Bags are stored per account so two shoppers sharing one browser never see
+ * each other's cart. A signed-out visitor has no persisted bag at all, which
+ * also matches the rule that only signed-in users can build a cart.
+ */
+export function getCartStorageKey(userId) {
+  return typeof userId === "string" && userId.trim() !== ""
+    ? `${CART_STORAGE_KEY}.${userId.trim()}`
+    : null;
+}
+
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim() !== "";
 }

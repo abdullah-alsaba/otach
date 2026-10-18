@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Button, toast } from "@heroui/react";
+import { Button } from "@heroui/react";
+import { toast } from "@/lib/notify";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
@@ -83,7 +84,7 @@ export default function RegisterPage() {
     } catch (err) {
       const message = getAuthErrorMessage(err);
       setErrors({ form: message });
-      toast.danger(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

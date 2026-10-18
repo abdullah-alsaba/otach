@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { toast } from "@heroui/react";
+import { toast } from "@/lib/notify";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/cart";
 

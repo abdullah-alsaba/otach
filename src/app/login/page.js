@@ -4,7 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, toast } from "@heroui/react";
+import { Button } from "@heroui/react";
+import { toast } from "@/lib/notify";
 import {
   browserLocalPersistence,
   browserSessionPersistence,
@@ -77,7 +78,7 @@ function LoginForm() {
     } catch (err) {
       const message = getAuthErrorMessage(err);
       setErrors({ form: message });
-      toast.danger(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -100,7 +101,7 @@ function LoginForm() {
     } catch (err) {
       const message = getAuthErrorMessage(err);
       setErrors({ form: message });
-      toast.danger(message);
+      toast.error(message);
     }
   };
 

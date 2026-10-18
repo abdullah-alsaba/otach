@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button, toast } from "@heroui/react";
+import { Button } from "@heroui/react";
+import { toast } from "@/lib/notify";
 import RequireAuth from "@/components/RequireAuth";
 import { useAuth } from "@/context/AuthContext";
 import { createItem } from "@/lib/items";
@@ -112,7 +113,7 @@ function AddProductForm() {
         title: "Submission Error",
         message,
       });
-      toast.danger(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
